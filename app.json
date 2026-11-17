@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Garuda Dictionary",
+    "slug": "garuda-dictionary",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/garuda-mark.svg",
+    "scheme": "garuda",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "backgroundColor": "#f6f4ed"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.garuda.dictionary"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#273fdb"
+      },
+      "package": "com.garuda.dictionary"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/garuda-mark.svg"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "./src/app"
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,1080 @@
+[
+  {
+    "id": 1,
+    "headword": "शिक्षा",
+    "transliteration": "śikṣā",
+    "romanised": [
+      "shiksha",
+      "siksha",
+      "shiksa"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "education",
+      "learning"
+    ],
+    "example": "शिक्षा हर बच्चे का अधिकार है।"
+  },
+  {
+    "id": 2,
+    "headword": "भाषा",
+    "transliteration": "bhāṣā",
+    "romanised": [
+      "bhasha",
+      "bhasa",
+      "bhaasha"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "language",
+      "speech"
+    ],
+    "example": "हिंदी भारत की एक प्रमुख भाषा है।"
+  },
+  {
+    "id": 3,
+    "headword": "शब्द",
+    "transliteration": "śabda",
+    "romanised": [
+      "shabd",
+      "shabda",
+      "sabd"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "word",
+      "sound"
+    ],
+    "example": "इस शब्द का अर्थ क्या है?"
+  },
+  {
+    "id": 4,
+    "headword": "प्रकाश",
+    "transliteration": "prakāśa",
+    "romanised": [
+      "prakash",
+      "prakaash",
+      "prakasha"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "light",
+      "brightness"
+    ],
+    "example": "सूरज का प्रकाश कमरे में फैल गया।"
+  },
+  {
+    "id": 5,
+    "headword": "वृक्ष",
+    "transliteration": "vṛkṣa",
+    "romanised": [
+      "vriksh",
+      "vriksha",
+      "vruksh"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "tree"
+    ],
+    "example": "आँगन में एक पुराना वृक्ष है।"
+  },
+  {
+    "id": 6,
+    "headword": "समय",
+    "transliteration": "samaya",
+    "romanised": [
+      "samay",
+      "samaya",
+      "samai"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "time",
+      "occasion"
+    ],
+    "example": "समय का सही उपयोग करो।"
+  },
+  {
+    "id": 7,
+    "headword": "कर्म",
+    "transliteration": "karma",
+    "romanised": [
+      "karm",
+      "karma"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "action",
+      "deed",
+      "duty"
+    ],
+    "example": "अच्छे कर्म का फल अच्छा होता है।"
+  },
+  {
+    "id": 8,
+    "headword": "शांति",
+    "transliteration": "śānti",
+    "romanised": [
+      "shanti",
+      "shaanti",
+      "santi"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "peace",
+      "calm"
+    ],
+    "example": "गाँव में शांति का माहौल है।"
+  },
+  {
+    "id": 9,
+    "headword": "प्रेम",
+    "transliteration": "prema",
+    "romanised": [
+      "prem",
+      "prema"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "love",
+      "affection"
+    ],
+    "example": "माँ का प्रेम निस्वार्थ होता है।"
+  },
+  {
+    "id": 10,
+    "headword": "सत्य",
+    "transliteration": "satya",
+    "romanised": [
+      "satya",
+      "saty"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "truth"
+    ],
+    "example": "सत्य की हमेशा जीत होती है।"
+  },
+  {
+    "id": 11,
+    "headword": "धर्म",
+    "transliteration": "dharma",
+    "romanised": [
+      "dharma",
+      "dharm"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "duty",
+      "religion",
+      "moral way of life"
+    ],
+    "example": "धर्म का अर्थ केवल पूजा नहीं, बल्कि कर्तव्य भी है।"
+  },
+  {
+    "id": 12,
+    "headword": "ज्ञान",
+    "transliteration": "jñāna",
+    "romanised": [
+      "gyaan",
+      "gyan",
+      "jnan",
+      "gyana"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "knowledge",
+      "wisdom"
+    ],
+    "example": "ज्ञान मनुष्य को सही निर्णय लेने में मदद करता है।"
+  },
+  {
+    "id": 13,
+    "headword": "मित्र",
+    "transliteration": "mitra",
+    "romanised": [
+      "mitra",
+      "mitr"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "friend",
+      "companion"
+    ],
+    "example": "मेरा मित्र आज घर आया।"
+  },
+  {
+    "id": 14,
+    "headword": "परिवार",
+    "transliteration": "parivāra",
+    "romanised": [
+      "parivar",
+      "pariwar",
+      "parivaar"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "family",
+      "household"
+    ],
+    "example": "मेरा परिवार गाँव में रहता है।"
+  },
+  {
+    "id": 15,
+    "headword": "पुस्तक",
+    "transliteration": "pustaka",
+    "romanised": [
+      "pustak",
+      "pustaka"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "book",
+      "volume"
+    ],
+    "example": "मैंने पुस्तक पढ़ी।"
+  },
+  {
+    "id": 16,
+    "headword": "विद्यालय",
+    "transliteration": "vidyālaya",
+    "romanised": [
+      "vidyalaya",
+      "vidyalay",
+      "vidhyalaya"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "school",
+      "educational institution"
+    ],
+    "example": "बच्चे सुबह विद्यालय जाते हैं।"
+  },
+  {
+    "id": 17,
+    "headword": "जल",
+    "transliteration": "jala",
+    "romanised": [
+      "jal",
+      "jala"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "water"
+    ],
+    "example": "जल जीवन के लिए आवश्यक है।"
+  },
+  {
+    "id": 18,
+    "headword": "अग्नि",
+    "transliteration": "agni",
+    "romanised": [
+      "agni",
+      "aagni"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "fire",
+      "flame"
+    ],
+    "example": "अग्नि को ऊर्जा का स्रोत माना जाता है।"
+  },
+  {
+    "id": 19,
+    "headword": "पृथ्वी",
+    "transliteration": "pṛthvī",
+    "romanised": [
+      "prithvi",
+      "prithvee",
+      "pruthvi"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "Earth",
+      "planet"
+    ],
+    "example": "पृथ्वी सूर्य की परिक्रमा करती है।"
+  },
+  {
+    "id": 20,
+    "headword": "आकाश",
+    "transliteration": "ākāśa",
+    "romanised": [
+      "aakash",
+      "akash",
+      "akaash"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "sky",
+      "firmament"
+    ],
+    "example": "रात में आकाश तारों से भरा था।"
+  },
+  {
+    "id": 21,
+    "headword": "नदी",
+    "transliteration": "nadī",
+    "romanised": [
+      "nadi",
+      "nadee"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "river"
+    ],
+    "example": "नदी का पानी साफ है।"
+  },
+  {
+    "id": 22,
+    "headword": "पर्वत",
+    "transliteration": "parvata",
+    "romanised": [
+      "parvat",
+      "parvata",
+      "parwat"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "mountain",
+      "hill"
+    ],
+    "example": "हिमालय एक विशाल पर्वत है।"
+  },
+  {
+    "id": 23,
+    "headword": "सागर",
+    "transliteration": "sāgara",
+    "romanised": [
+      "sagar",
+      "saagar"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "ocean",
+      "sea"
+    ],
+    "example": "सागर की लहरें किनारे तक आईं।"
+  },
+  {
+    "id": 24,
+    "headword": "वर्षा",
+    "transliteration": "varṣā",
+    "romanised": [
+      "varsha",
+      "varsa"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "rain",
+      "rainfall"
+    ],
+    "example": "वर्षा से खेत हरे हो गए।"
+  },
+  {
+    "id": 25,
+    "headword": "सूर्य",
+    "transliteration": "sūrya",
+    "romanised": [
+      "surya",
+      "soorya"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "sun"
+    ],
+    "example": "सूर्य पूर्व दिशा से उगता है।"
+  },
+  {
+    "id": 26,
+    "headword": "चंद्रमा",
+    "transliteration": "candramā",
+    "romanised": [
+      "chandrama",
+      "chandramā",
+      "chandramaa"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "moon"
+    ],
+    "example": "चंद्रमा रात में चमकता है।"
+  },
+  {
+    "id": 27,
+    "headword": "तारा",
+    "transliteration": "tārā",
+    "romanised": [
+      "tara",
+      "taara"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "star"
+    ],
+    "example": "आकाश में एक चमकीला तारा दिखाई दिया।"
+  },
+  {
+    "id": 28,
+    "headword": "फूल",
+    "transliteration": "phūla",
+    "romanised": [
+      "phool",
+      "phul",
+      "phoola"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "flower",
+      "blossom"
+    ],
+    "example": "बगीचे में सुंदर फूल खिले हैं।"
+  },
+  {
+    "id": 29,
+    "headword": "फल",
+    "transliteration": "phala",
+    "romanised": [
+      "phal",
+      "fala",
+      "phala"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "fruit",
+      "result"
+    ],
+    "example": "सेब एक पौष्टिक फल है।"
+  },
+  {
+    "id": 30,
+    "headword": "भोजन",
+    "transliteration": "bhojana",
+    "romanised": [
+      "bhojan",
+      "bhojana"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "food",
+      "meal"
+    ],
+    "example": "समय पर भोजन करना चाहिए।"
+  },
+  {
+    "id": 31,
+    "headword": "पानी",
+    "transliteration": "pānī",
+    "romanised": [
+      "pani",
+      "paanee",
+      "paani"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "water",
+      "drinking water"
+    ],
+    "example": "मुझे एक गिलास पानी चाहिए।"
+  },
+  {
+    "id": 32,
+    "headword": "घर",
+    "transliteration": "ghara",
+    "romanised": [
+      "ghar",
+      "ghara"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "house",
+      "home"
+    ],
+    "example": "मेरा घर स्कूल के पास है।"
+  },
+  {
+    "id": 33,
+    "headword": "नगर",
+    "transliteration": "nagara",
+    "romanised": [
+      "nagar",
+      "nagara"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "city",
+      "town"
+    ],
+    "example": "यह नगर अपनी संस्कृति के लिए प्रसिद्ध है।"
+  },
+  {
+    "id": 34,
+    "headword": "गाँव",
+    "transliteration": "gā̃va",
+    "romanised": [
+      "gaon",
+      "gaaon",
+      "ganv",
+      "gaav"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "village",
+      "rural community"
+    ],
+    "example": "मेरा गाँव नदी के किनारे है।"
+  },
+  {
+    "id": 35,
+    "headword": "रास्ता",
+    "transliteration": "rāstā",
+    "romanised": [
+      "rasta",
+      "raasta",
+      "raastaa"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "road",
+      "way",
+      "path"
+    ],
+    "example": "यह रास्ता बाज़ार तक जाता है।"
+  },
+  {
+    "id": 36,
+    "headword": "मित्रता",
+    "transliteration": "mitratā",
+    "romanised": [
+      "mitrata",
+      "mitrataa"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "friendship",
+      "comradeship"
+    ],
+    "example": "सच्ची मित्रता विश्वास पर टिकी होती है।"
+  },
+  {
+    "id": 37,
+    "headword": "स्वास्थ्य",
+    "transliteration": "svāsthya",
+    "romanised": [
+      "swasthya",
+      "svasthya"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "health",
+      "well-being"
+    ],
+    "example": "अच्छा स्वास्थ्य जीवन को बेहतर बनाता है।"
+  },
+  {
+    "id": 38,
+    "headword": "सुंदर",
+    "transliteration": "sundara",
+    "romanised": [
+      "sundar",
+      "sundara"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "beautiful",
+      "lovely"
+    ],
+    "example": "यह एक सुंदर बगीचा है।"
+  },
+  {
+    "id": 39,
+    "headword": "कठिन",
+    "transliteration": "kaṭhina",
+    "romanised": [
+      "kathin",
+      "kathina"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "difficult",
+      "hard"
+    ],
+    "example": "यह प्रश्न कठिन नहीं है।"
+  },
+  {
+    "id": 40,
+    "headword": "सरल",
+    "transliteration": "sarala",
+    "romanised": [
+      "saral",
+      "sarala"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "simple",
+      "easy"
+    ],
+    "example": "इस समस्या का सरल समाधान खोजो।"
+  },
+  {
+    "id": 41,
+    "headword": "बड़ा",
+    "transliteration": "baṛā",
+    "romanised": [
+      "bada",
+      "badaa",
+      "bara"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "big",
+      "large"
+    ],
+    "example": "यह एक बड़ा कमरा है।"
+  },
+  {
+    "id": 42,
+    "headword": "छोटा",
+    "transliteration": "choṭā",
+    "romanised": [
+      "chhota",
+      "chota",
+      "chhotaa"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "small",
+      "little"
+    ],
+    "example": "मेरे पास एक छोटा बैग है।"
+  },
+  {
+    "id": 43,
+    "headword": "नया",
+    "transliteration": "nayā",
+    "romanised": [
+      "naya",
+      "nayaa"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "new",
+      "recent"
+    ],
+    "example": "उसने नई पुस्तक खरीदी।"
+  },
+  {
+    "id": 44,
+    "headword": "पुराना",
+    "transliteration": "purānā",
+    "romanised": [
+      "purana",
+      "puraana"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "old",
+      "aged"
+    ],
+    "example": "यह मेरा पुराना घर है।"
+  },
+  {
+    "id": 45,
+    "headword": "अच्छा",
+    "transliteration": "acchā",
+    "romanised": [
+      "achha",
+      "accha",
+      "achchha"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "good",
+      "nice"
+    ],
+    "example": "आज मौसम अच्छा है।"
+  },
+  {
+    "id": 46,
+    "headword": "बुरा",
+    "transliteration": "burā",
+    "romanised": [
+      "bura",
+      "buraa"
+    ],
+    "pos": "adjective",
+    "meanings": [
+      "bad",
+      "unpleasant"
+    ],
+    "example": "किसी के साथ बुरा व्यवहार मत करो।"
+  },
+  {
+    "id": 47,
+    "headword": "चलना",
+    "transliteration": "calanā",
+    "romanised": [
+      "chalna",
+      "chalana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to walk",
+      "to move"
+    ],
+    "example": "वह रोज़ सुबह पार्क में चलने जाता है।"
+  },
+  {
+    "id": 48,
+    "headword": "पढ़ना",
+    "transliteration": "paṛhnā",
+    "romanised": [
+      "padhna",
+      "parhna"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to read",
+      "to study"
+    ],
+    "example": "मुझे हर दिन हिंदी पढ़ना पसंद है।"
+  },
+  {
+    "id": 49,
+    "headword": "लिखना",
+    "transliteration": "likhnā",
+    "romanised": [
+      "likhna",
+      "likhana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to write",
+      "to compose"
+    ],
+    "example": "वह पत्र लिखना सीख रही है।"
+  },
+  {
+    "id": 50,
+    "headword": "बोलना",
+    "transliteration": "bolanā",
+    "romanised": [
+      "bolna",
+      "bolana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to speak",
+      "to say"
+    ],
+    "example": "कक्षा में स्पष्ट बोलना चाहिए।"
+  },
+  {
+    "id": 51,
+    "headword": "सुनना",
+    "transliteration": "sunanā",
+    "romanised": [
+      "sunna",
+      "sunana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to hear",
+      "to listen"
+    ],
+    "example": "दूसरों की बात ध्यान से सुनना चाहिए।"
+  },
+  {
+    "id": 52,
+    "headword": "देखना",
+    "transliteration": "dekhnā",
+    "romanised": [
+      "dekhna",
+      "dekhana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to see",
+      "to watch"
+    ],
+    "example": "मुझे पक्षियों को देखना अच्छा लगता है।"
+  },
+  {
+    "id": 53,
+    "headword": "सोचना",
+    "transliteration": "socanā",
+    "romanised": [
+      "sochna",
+      "sochana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to think",
+      "to consider"
+    ],
+    "example": "कोई निर्णय लेने से पहले सोचो।"
+  },
+  {
+    "id": 54,
+    "headword": "समझना",
+    "transliteration": "samajhnā",
+    "romanised": [
+      "samajhna",
+      "samajhana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to understand",
+      "to comprehend"
+    ],
+    "example": "दूसरों की बात समझना ज़रूरी है।"
+  },
+  {
+    "id": 55,
+    "headword": "बनाना",
+    "transliteration": "banānā",
+    "romanised": [
+      "banana",
+      "banaana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to make",
+      "to create"
+    ],
+    "example": "बच्चे मिट्टी से खिलौने बनाते हैं।"
+  },
+  {
+    "id": 56,
+    "headword": "करना",
+    "transliteration": "karanā",
+    "romanised": [
+      "karna",
+      "karana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to do",
+      "to perform"
+    ],
+    "example": "हमें अपना काम समय पर करना चाहिए।"
+  },
+  {
+    "id": 57,
+    "headword": "देना",
+    "transliteration": "denā",
+    "romanised": [
+      "dena",
+      "denaa"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to give",
+      "to provide"
+    ],
+    "example": "कृपया मुझे पानी देना।"
+  },
+  {
+    "id": 58,
+    "headword": "लेना",
+    "transliteration": "lenā",
+    "romanised": [
+      "lena",
+      "leena"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to take",
+      "to receive"
+    ],
+    "example": "उसने पुस्तक लेना चाहा।"
+  },
+  {
+    "id": 59,
+    "headword": "जाना",
+    "transliteration": "jānā",
+    "romanised": [
+      "jana",
+      "jaana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to go",
+      "to leave"
+    ],
+    "example": "मुझे बाज़ार जाना है।"
+  },
+  {
+    "id": 60,
+    "headword": "आना",
+    "transliteration": "ānā",
+    "romanised": [
+      "aana",
+      "ana"
+    ],
+    "pos": "verb",
+    "meanings": [
+      "to come",
+      "to arrive"
+    ],
+    "example": "कल मेरे घर आना।"
+  },
+  {
+    "id": 61,
+    "headword": "मेहनत",
+    "transliteration": "mehnat",
+    "romanised": [
+      "mehnat",
+      "mehanat"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "hard work",
+      "effort"
+    ],
+    "example": "मेहनत से सफलता मिलती है।"
+  },
+  {
+    "id": 62,
+    "headword": "सफलता",
+    "transliteration": "saphalatā",
+    "romanised": [
+      "safalta",
+      "safalata"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "success",
+      "achievement"
+    ],
+    "example": "सफलता के लिए धैर्य आवश्यक है।"
+  },
+  {
+    "id": 63,
+    "headword": "विश्वास",
+    "transliteration": "viśvāsa",
+    "romanised": [
+      "vishwas",
+      "vishvaas",
+      "vishvas"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "trust",
+      "belief",
+      "confidence"
+    ],
+    "example": "विश्वास अच्छे संबंधों की नींव है।"
+  },
+  {
+    "id": 64,
+    "headword": "साहस",
+    "transliteration": "sāhasa",
+    "romanised": [
+      "sahas",
+      "saahas"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "courage",
+      "bravery"
+    ],
+    "example": "साहस से कठिनाइयों का सामना करो।"
+  },
+  {
+    "id": 65,
+    "headword": "स्वतंत्रता",
+    "transliteration": "svatantratā",
+    "romanised": [
+      "swatantrata",
+      "swatantrataa",
+      "svatantrata"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "freedom",
+      "independence"
+    ],
+    "example": "स्वतंत्रता हमारा अधिकार है।"
+  },
+  {
+    "id": 66,
+    "headword": "संस्कृति",
+    "transliteration": "saṃskṛti",
+    "romanised": [
+      "sanskriti",
+      "sanskruti",
+      "sanskrti"
+    ],
+    "pos": "noun (f.)",
+    "meanings": [
+      "culture",
+      "tradition"
+    ],
+    "example": "भारत की संस्कृति विविधता से भरी है।"
+  },
+  {
+    "id": 67,
+    "headword": "अनुभव",
+    "transliteration": "anubhava",
+    "romanised": [
+      "anubhav",
+      "anubhava"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "experience",
+      "practical knowledge"
+    ],
+    "example": "अनुभव से समझ विकसित होती है।"
+  },
+  {
+    "id": 68,
+    "headword": "प्रश्न",
+    "transliteration": "praśna",
+    "romanised": [
+      "prashna",
+      "prashn",
+      "prasna"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "question",
+      "query"
+    ],
+    "example": "शिक्षक ने एक प्रश्न पूछा।"
+  },
+  {
+    "id": 69,
+    "headword": "उत्तर",
+    "transliteration": "uttara",
+    "romanised": [
+      "uttar",
+      "uttara"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "answer",
+      "reply",
+      "north"
+    ],
+    "example": "उसने प्रश्न का सही उत्तर दिया।"
+  },
+  {
+    "id": 70,
+    "headword": "विचार",
+    "transliteration": "vicāra",
+    "romanised": [
+      "vichar",
+      "vichaar",
+      "vichara"
+    ],
+    "pos": "noun (m.)",
+    "meanings": [
+      "thought",
+      "idea",
+      "opinion"
+    ],
+    "example": "हर विचार को ध्यान से परखना चाहिए।"
+  }
+]
