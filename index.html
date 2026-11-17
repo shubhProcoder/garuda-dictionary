@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f4ed" />
+    <meta name="description" content="A small Hindi–English dictionary. Search in Devanagari, IAST, or everyday Roman spelling." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/garuda-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Garuda Dictionary — शब्दकोश</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Garuda Dictionary home">
+          <span class="brand-mark" aria-hidden="true">ग</span>
+          <span class="brand-copy">
+            <span class="brand-name">GARUDA <span>DICTIONARY</span></span>
+            <span class="brand-subtitle">हिंदी · ENGLISH · WORDS IN MOTION</span>
+          </span>
+        </a>
+        <div class="topbar-right">
+          <span class="offline-indicator"><span class="status-dot"></span><span id="connection-label">LOCAL DATA</span></span>
+          <span class="entry-total"><strong id="total-count">70</strong> WORDS</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="intro-section" aria-labelledby="page-title">
+          <div class="intro-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> A POCKET-SIZED WORD FIELD</p>
+            <h1 id="page-title">Find the word.<br /><em>Find its meaning.</em></h1>
+            <p class="intro-description">Look up Hindi words in the script you know. Search in देवनागरी, IAST, or the Roman spellings you use every day.</p>
+          </div>
+          <div class="intro-aside" aria-hidden="true">
+            <span class="aside-sanskrit">शब्द</span>
+            <span class="aside-roman">śabda / word</span>
+            <span class="aside-rule"></span>
+            <span class="aside-note">LANGUAGE IS A<br />LIVING SYSTEM.</span>
+          </div>
+        </section>
+
+        <section class="search-section" aria-label="Dictionary search">
+          <form id="search-form" class="search-form" role="search">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <label class="sr-only" for="search-input">Search Hindi words</label>
+            <input id="search-input" type="search" autocomplete="off" spellcheck="false" placeholder="Try dharma, dharm, or धर्म" aria-describedby="search-hint" />
+            <kbd class="search-shortcut" aria-hidden="true">/</kbd>
+            <button class="clear-search" id="clear-search" type="button" aria-label="Clear search" hidden>×</button>
+            <button class="search-submit" type="submit">SEARCH <span aria-hidden="true">↗</span></button>
+          </form>
+          <div class="search-meta">
+            <p id="search-hint">Roman input is normalized, so common spelling differences still find the same word.</p>
+            <span class="search-language">DEVANAGARI <span>+</span> ROMAN</span>
+          </div>
+          <div id="recent-searches" class="recent-searches" aria-live="polite"></div>
+        </section>
+
+        <section class="dictionary-section" aria-label="Dictionary entries">
+          <div class="list-panel" id="list-panel">
+            <div class="list-header">
+              <div class="list-heading-group">
+                <p class="section-kicker">THE COLLECTION</p>
+                <h2 id="list-title">All words <span id="result-count">70</span></h2>
+              </div>
+              <label class="filter-label" for="pos-filter">
+                <span>PART OF SPEECH</span>
+                <select id="pos-filter">
+                  <option value="all">All types</option>
+                  <option value="noun">Nouns</option>
+                  <option value="verb">Verbs</option>
+                  <option value="adjective">Adjectives</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="collection-tabs" role="tablist" aria-label="Entry collection">
+              <button class="collection-tab is-active" id="all-tab" type="button" role="tab" aria-selected="true">All words</button>
+              <button class="collection-tab" id="saved-tab" type="button" role="tab" aria-selected="false">Saved <span id="saved-count">0</span></button>
+            </div>
+
+            <div id="results" class="results-list" aria-live="polite" aria-label="Search results"></div>
+            <div id="empty-state" class="empty-state" hidden>
+              <div class="empty-symbol" aria-hidden="true">∅</div>
+              <p class="section-kicker">NO MATCHES FOUND</p>
+              <h3>That word isn't here yet.</h3>
+              <p>Try a shorter spelling, remove a vowel, or search in देवनागरी.</p>
+              <button id="empty-clear" class="text-button" type="button">Clear search <span aria-hidden="true">↗</span></button>
+            </div>
+            <p class="list-footer"><span class="footer-dot"></span> A growing collection of useful words</p>
+          </div>
+
+          <aside class="detail-panel" id="detail-panel" aria-label="Selected dictionary entry">
+            <button class="mobile-back" id="mobile-back" type="button"><span aria-hidden="true">←</span> BACK TO WORDS</button>
+            <div id="detail-content"></div>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>GARUDA / शब्दकोश</span>
+        <span>BUILT FOR THE WAY PEOPLE ACTUALLY SEARCH.</span>
+        <a href="#page-title">BACK TO TOP ↑</a>
+      </footer>
+    </div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

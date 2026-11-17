@@ -1,0 +1,14 @@
+{
+  "name": "Garuda Dictionary — Hindi to English",
+  "short_name": "Garuda Dictionary",
+  "description": "An offline-capable Hindi–English dictionary with Devanagari and Roman search.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ed",
+  "theme_color": "#f6f4ed",
+  "icons": [
+    { "src": "./assets/garuda-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

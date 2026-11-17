@@ -1,0 +1,15 @@
+{
+  "name": "garuda-dictionary",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An offline-capable Hindi–English dictionary with Devanagari and Roman search.",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
