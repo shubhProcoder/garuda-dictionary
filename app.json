@@ -4,11 +4,13 @@
     "slug": "garuda-dictionary",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/garuda-mark.svg",
+    "icon": "./assets/icon.png",
     "scheme": "garuda",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#f6f4ed"
     },
     "ios": {
@@ -17,6 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#273fdb"
       },
       "package": "com.garuda.dictionary"
@@ -24,7 +27,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/garuda-mark.svg"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [
