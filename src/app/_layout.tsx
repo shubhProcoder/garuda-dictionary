@@ -1,9 +1,22 @@
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { colors } from '../theme/tokens';
 
+// Prevent native splash screen from auto-hiding until initial layout is ready
+SplashScreen.preventAutoHideAsync().catch(() => {
+  /* reloading the app might cause some race conditions, ignore */
+});
+
 export default function RootLayout() {
+  useEffect(() => {
+    // Hide native splash screen once the root layout is mounted and ready
+    SplashScreen.hideAsync().catch((err) => {
+      console.warn('Failed to hide splash screen:', err);
+    });
+  }, []);
+
   return (
     <>
       <StatusBar style="dark" backgroundColor={colors.canvasPaper} />

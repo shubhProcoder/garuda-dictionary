@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -11,12 +11,17 @@ import {
 import { AppHeader } from '../../components/AppHeader';
 import { EmptyState } from '../../components/EmptyState';
 import { EntryCard } from '../../components/EntryCard';
+import { FirstRunWelcome } from '../../components/FirstRunWelcome';
 import { RecentSearches } from '../../components/RecentSearches';
 import { SearchBar } from '../../components/SearchBar';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useSearch } from '../../hooks/useSearch';
+import {
+  isOnboardingCompleted,
+  setOnboardingCompleted,
+} from '../../storage/onboarding';
 import { colors, spacing, typography } from '../../theme/tokens';
 import { DictionaryEntry, SearchResult } from '../../types/dictionary';
 
@@ -27,6 +32,30 @@ export default function SearchScreen() {
   const { entries, index, isLoading: isDictLoading, error } = useDictionary();
   const { isBookmarked } = useBookmarks();
   const { recents, addRecent, clearRecents } = useRecentSearches();
+
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check first-run onboarding status on initial mount
+  useEffect(() => {
+    let mounted = true;
+    isOnboardingCompleted()
+      .then((completed) => {
+        if (mounted && !completed) {
+          setShowOnboarding(true);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to check onboarding status:', err);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleDismissOnboarding = async () => {
+    setShowOnboarding(false);
+    await setOnboardingCompleted();
+  };
 
   const {
     query,
@@ -149,6 +178,13 @@ export default function SearchScreen() {
             onClearSearch={hasQuery ? clearQuery : undefined}
           />
         }
+      />
+
+      {/* First-Run Onboarding Modal Overlay */}
+      <FirstRunWelcome
+        visible={showOnboarding}
+        onStartExploring={handleDismissOnboarding}
+        onSkip={handleDismissOnboarding}
       />
     </SafeAreaView>
   );
