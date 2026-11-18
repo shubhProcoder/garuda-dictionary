@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act, fireEvent, render, renderHook, waitFor } from '@testing-library/react-native';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
@@ -196,6 +197,91 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
         expect(SplashScreen.hideAsync).toHaveBeenCalled();
       });
     });
+
+    it('handles delayed AsyncStorage hydration on cold start without flashing Light when Dark is persisted', async () => {
+      // Simulate cold start with empty memory cache but persisted Dark preference
+      await resetSettings();
+      await AsyncStorage.setItem('@garuda:settings:theme:v1', 'dark');
+
+      let resolveGetItem: ((val: string | null) => void) | null = null;
+      const delayedGetItemPromise = new Promise<string | null>((resolve) => {
+        resolveGetItem = resolve;
+      });
+
+      const originalImpl = (AsyncStorage.getItem as jest.Mock).getMockImplementation();
+      (AsyncStorage.getItem as jest.Mock).mockImplementation(async (key: string, callback?: any) => {
+        if (key === '@garuda:settings:theme:v1') {
+          return delayedGetItemPromise;
+        }
+        return originalImpl ? originalImpl(key, callback) : (AsyncStorage as any).__INTERNAL_MOCK_STORAGE__[key] ?? null;
+      });
+
+      try {
+        // Render RootLayout while AsyncStorage is still pending (delayed beyond 1500ms)
+        const root = render(<RootLayout />);
+
+        // While isReady is false, RootNavigation returns null to prevent premature Light theme flash
+        expect(root.toJSON()).toBeNull();
+
+        // Resolve delayed AsyncStorage with 'dark'
+        await act(async () => {
+          if (resolveGetItem) (resolveGetItem as any)('dark');
+        });
+
+        // Upon resolving, RootLayout renders and hides native splash
+        await waitFor(() => {
+          expect(SplashScreen.hideAsync).toHaveBeenCalled();
+        });
+      } finally {
+        (AsyncStorage.getItem as jest.Mock).mockImplementation(originalImpl);
+      }
+    });
+
+    it('renders Light theme upon cold start when Light preference is persisted', async () => {
+      await resetSettings();
+      await AsyncStorage.setItem('@garuda:settings:theme:v1', 'light');
+
+      const { result } = renderHook(() => useTheme(), {
+        wrapper: ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isReady).toBe(true);
+      });
+
+      expect(result.current.themePreference).toBe('light');
+      expect(result.current.isDark).toBe(false);
+      expect(result.current.colors.canvasPaper).toBe(lightThemeColors.canvasPaper);
+    });
+
+    it('resolves device appearance on cold start when System preference is persisted', async () => {
+      await resetSettings();
+      await AsyncStorage.setItem('@garuda:settings:theme:v1', 'system');
+      (useColorScheme as jest.Mock).mockReturnValue('dark');
+
+      const { result } = renderHook(() => useTheme(), {
+        wrapper: ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isReady).toBe(true);
+        expect(result.current.themePreference).toBe('system');
+      });
+
+      expect(result.current.isDark).toBe(true);
+      expect(result.current.colors.canvasPaper).toBe(darkThemeColors.canvasPaper);
+    });
+
+    it('ensures splash eventually hides and application recovers on AsyncStorage failure', async () => {
+      await resetSettings();
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(new Error('Storage failure'));
+
+      render(<RootLayout />);
+
+      await waitFor(() => {
+        expect(SplashScreen.hideAsync).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('2. Devanagari Reading Size Preference & Headword Scaling', () => {
@@ -297,13 +383,32 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
       expect(getByText(/70 WORDS/)).toBeTruthy();
       expect(getByText('Verified Entries')).toBeTruthy();
 
-      // About
-      expect(getByText('1.0.0')).toBeTruthy();
+      // About application version display
+      expect(getByText(getAppVersion())).toBeTruthy();
     });
 
-    it('resolves the actual application version dynamically with getAppVersion()', () => {
-      const version = getAppVersion();
-      expect(version).toBe('1.0.0');
+    it('resolves the actual application version dynamically and defaults to neutral fallback when metadata is absent', () => {
+      // 1. When runtime metadata is absent, neutral fallback is returned (never fake '1.0.0')
+      expect(getAppVersion({} as any)).toBe('Version unavailable');
+
+      // 2. Default invocation with bare Constants fallback in test environment
+      expect(getAppVersion()).toBe('Version unavailable');
+
+      // 3. Dynamically reflects Constants.expoConfig.version
+      expect(getAppVersion({ expoConfig: { version: '2.5.1' } } as any)).toBe('2.5.1');
+
+      // 4. Dynamically reflects Constants.manifest2.extra.expoClient.version
+      expect(
+        getAppVersion({
+          manifest2: { extra: { expoClient: { version: '3.0.0-beta.1' } } },
+        } as any)
+      ).toBe('3.0.0-beta.1');
+
+      // 5. Dynamically reflects manifest.version
+      expect(getAppVersion({ manifest: { version: '1.8.2' } } as any)).toBe('1.8.2');
+
+      // 6. Dynamically reflects nativeAppVersion
+      expect(getAppVersion({ nativeAppVersion: '1.0.4' } as any)).toBe('1.0.4');
     });
 
     it('allows changing theme preference from Settings UI', async () => {

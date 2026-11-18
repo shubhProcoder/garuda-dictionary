@@ -22,14 +22,18 @@ const READING_SIZE_OPTIONS: Array<{ label: string; value: DevanagariReadingSize;
 
 /**
  * Resolves the actual runtime application version from Expo Constants or app config.
- * Falls back to '1.0.0' if metadata is unavailable.
+ * Displays 'Version unavailable' if metadata genuinely cannot be resolved.
  */
-export function getAppVersion(): string {
-  return (
-    Constants.expoConfig?.version ||
-    Constants.manifest2?.extra?.expoClient?.version ||
-    '1.0.0'
-  );
+export function getAppVersion(constantsInstance: typeof Constants = Constants): string {
+  const version =
+    constantsInstance?.expoConfig?.version ||
+    constantsInstance?.manifest2?.extra?.expoClient?.version ||
+    (constantsInstance as any)?.manifest?.version ||
+    constantsInstance?.nativeAppVersion;
+
+  return version && typeof version === 'string' && version.trim().length > 0
+    ? version.trim()
+    : 'Version unavailable';
 }
 
 export default function SettingsScreen() {

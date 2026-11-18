@@ -89,9 +89,18 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Load persisted preferences on mount
   useEffect(() => {
     let mounted = true;
+
+    // Safety timeout: if storage hangs and never resolves, ensure isReady becomes true
+    const safetyTimer = setTimeout(() => {
+      if (mounted) {
+        setIsReady(true);
+      }
+    }, 2500);
+
     getAllSettings()
       .then((settings) => {
         if (mounted) {
+          clearTimeout(safetyTimer);
           if (!initialTheme && !userChangedThemeRef.current) {
             setThemePreferenceState(settings.themePreference);
           }
@@ -104,12 +113,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       .catch((err) => {
         console.warn('Failed to load preferences in ThemeProvider:', err);
         if (mounted) {
+          clearTimeout(safetyTimer);
           setIsReady(true);
         }
       });
 
     return () => {
       mounted = false;
+      clearTimeout(safetyTimer);
     };
   }, [initialTheme, initialReadingSize]);
 
