@@ -17,7 +17,7 @@ describe('LexiconScreen (Tab 2)', () => {
     });
   });
 
-  it('renders all 70 entries and POS filter chips', async () => {
+  it('renders all 70 entries and POS filter chips with exact counts', async () => {
     const { getByText } = render(<LexiconScreen />);
 
     expect(getByText('THE COLLECTION')).toBeTruthy();
@@ -27,6 +27,12 @@ describe('LexiconScreen (Tab 2)', () => {
     expect(getByText('Nouns')).toBeTruthy();
     expect(getByText('Verbs')).toBeTruthy();
     expect(getByText('Adjectives')).toBeTruthy();
+
+    // Verify exact calculated counts from actual dictionary data (47 nouns, 14 verbs, 9 adjectives)
+    expect(getByText('70')).toBeTruthy();
+    expect(getByText('47')).toBeTruthy();
+    expect(getByText('14')).toBeTruthy();
+    expect(getByText('9')).toBeTruthy();
 
     await waitFor(() => {
       expect(getByText('शिक्षा')).toBeTruthy();
@@ -42,6 +48,44 @@ describe('LexiconScreen (Tab 2)', () => {
     // Should now show 14 verbs of 70
     await waitFor(() => {
       expect(getByText('14 of 70')).toBeTruthy();
+    });
+  });
+
+  it('filters entries with scoped local search input', async () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(<LexiconScreen />);
+
+    const searchInput = getByPlaceholderText('Filter words in lexicon...');
+    expect(searchInput).toBeTruthy();
+
+    // Search for 'dharma'
+    fireEvent.changeText(searchInput, 'dharma');
+
+    await waitFor(() => {
+      expect(getByText('धर्म')).toBeTruthy();
+      expect(getByText('1 of 70')).toBeTruthy();
+      // Unrelated entry should not be shown
+      expect(queryByText('शिक्षा')).toBeNull();
+    });
+  });
+
+  it('shows empty filter state and resets on button press', async () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(<LexiconScreen />);
+
+    const searchInput = getByPlaceholderText('Filter words in lexicon...');
+    fireEvent.changeText(searchInput, 'nonexistentwordxyz');
+
+    await waitFor(() => {
+      expect(getByText('0 of 70')).toBeTruthy();
+      expect(getByText('No matching words found.')).toBeTruthy();
+      expect(getByText('Reset filters ↗')).toBeTruthy();
+    });
+
+    // Press reset filters
+    fireEvent.press(getByText('Reset filters ↗'));
+
+    await waitFor(() => {
+      expect(getByText('70 of 70')).toBeTruthy();
+      expect(queryByText('No matching words found.')).toBeNull();
     });
   });
 

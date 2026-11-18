@@ -1,3 +1,4 @@
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -20,7 +21,7 @@ describe('SavedScreen (Tab 3)', () => {
     });
   });
 
-  it('renders empty state when no words are bookmarked', () => {
+  it('renders empty state when no words are bookmarked and navigates to lexicon on explore press', () => {
     (useBookmarks as jest.Mock).mockReturnValue({
       bookmarks: [],
       isLoading: false,
@@ -31,9 +32,14 @@ describe('SavedScreen (Tab 3)', () => {
 
     const { getByText } = render(<SavedScreen />);
 
-    expect(getByText('YOUR SAVED WORDS')).toBeTruthy();
+    expect(getByText('YOUR COLLECTION')).toBeTruthy();
+    expect(getByText('Saved Words')).toBeTruthy();
     expect(getByText('Your collection starts here.')).toBeTruthy();
     expect(getByText('0 saved')).toBeTruthy();
+    expect(getByText('Explore the dictionary ↗')).toBeTruthy();
+
+    fireEvent.press(getByText('Explore the dictionary ↗'));
+    expect(mockPush).toHaveBeenCalledWith('/(tabs)/lexicon');
   });
 
   it('renders bookmarked entry cards and navigates on tap', async () => {
@@ -66,5 +72,35 @@ describe('SavedScreen (Tab 3)', () => {
       pathname: '/entry/[id]',
       params: { id: '11' },
     });
+  });
+
+  it('triggers bookmark removal when row bookmark button is pressed', async () => {
+    const mockToggleBookmark = jest.fn();
+    const mockEntry = {
+      id: 11,
+      headword: 'धर्म',
+      transliteration: 'dharma',
+      romanised: ['dharma', 'dharm'],
+      pos: 'noun (m.)',
+      meanings: ['duty', 'religion', 'moral way of life'],
+      example: 'धर्म का अर्थ केवल पूजा नहीं, बल्कि कर्तव्य भी है।',
+    };
+
+    (useBookmarks as jest.Mock).mockReturnValue({
+      bookmarks: [11],
+      isLoading: false,
+      isBookmarked: jest.fn().mockReturnValue(true),
+      getSavedEntries: jest.fn().mockReturnValue([mockEntry]),
+      toggleBookmark: mockToggleBookmark,
+    });
+
+    const { getByLabelText } = render(<SavedScreen />);
+
+    const removeBtn = getByLabelText('Remove धर्म from saved words');
+    expect(removeBtn).toBeTruthy();
+
+    fireEvent.press(removeBtn);
+
+    expect(mockToggleBookmark).toHaveBeenCalledWith(11);
   });
 });

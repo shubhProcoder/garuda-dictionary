@@ -5,12 +5,16 @@ import { borderRadius, colors, spacing, typography } from '../theme/tokens';
 const SUGGESTIONS = ['dharma', 'धर्म', 'shiksha', 'karma', 'bhaasha'];
 
 export interface EmptyStateProps {
-  type: 'no_matches' | 'no_saved';
+  type: 'no_matches' | 'no_saved' | 'no_history';
   onClearSearch?: () => void;
   /** The query that produced no results – shown as an echo */
   query?: string;
   /** Called when user taps a suggested example query */
   onSelectSuggestion?: (q: string) => void;
+  title?: string;
+  description?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -18,34 +22,68 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onClearSearch,
   query,
   onSelectSuggestion,
+  title,
+  description,
+  actionLabel,
+  onAction,
 }) => {
   const isNoMatches = type === 'no_matches';
+  const isNoSaved = type === 'no_saved';
+  const isNoHistory = type === 'no_history';
+
+  const defaultSymbol = isNoHistory ? '◷' : '∅';
+
+  const defaultKicker = isNoMatches
+    ? 'NO MATCHES FOUND'
+    : isNoSaved
+    ? 'YOUR SAVED WORDS'
+    : 'NO RECENT SEARCHES';
+
+  const defaultTitle = isNoMatches
+    ? "That word isn't here yet."
+    : isNoSaved
+    ? 'Your collection starts here.'
+    : 'Your search history is empty.';
+
+  const defaultDescription = isNoMatches
+    ? 'Try a shorter spelling, remove a vowel, or search in देवनागरी or English.'
+    : isNoSaved
+    ? 'Save words while exploring Garuda and they will appear here.'
+    : 'Your recent dictionary searches will appear here.';
+
+  const defaultActionLabel = isNoMatches
+    ? 'Clear search ↗'
+    : isNoSaved
+    ? 'Explore the dictionary ↗'
+    : 'Start searching ↗';
+
+  const handleAction = onAction || onClearSearch;
 
   return (
     <View style={styles.container}>
       <Text style={styles.symbol} aria-hidden>
-        ∅
+        {defaultSymbol}
       </Text>
       <Text style={styles.kicker}>
-        {isNoMatches ? 'NO MATCHES FOUND' : 'YOUR SAVED WORDS'}
+        {defaultKicker}
       </Text>
       <Text style={styles.title}>
-        {isNoMatches ? "That word isn't here yet." : 'Your collection starts here.'}
+        {title || defaultTitle}
       </Text>
       <Text style={styles.description}>
-        {isNoMatches
-          ? 'Try a shorter spelling, remove a vowel, or search in देवनागरी or English.'
-          : 'Save a word from its detail view by tapping the star and it will appear here.'}
+        {description || defaultDescription}
       </Text>
 
-      {isNoMatches && onClearSearch && (
+      {handleAction && (
         <Pressable
           style={styles.clearButton}
-          onPress={onClearSearch}
+          onPress={handleAction}
           accessibilityRole="button"
-          accessibilityLabel="Clear search input"
+          accessibilityLabel={actionLabel || defaultActionLabel}
         >
-          <Text style={styles.clearButtonText}>Clear search ↗</Text>
+          <Text style={styles.clearButtonText}>
+            {actionLabel || defaultActionLabel}
+          </Text>
         </Pressable>
       )}
 

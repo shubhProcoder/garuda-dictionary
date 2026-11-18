@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import React from 'react';
+import { Alert } from 'react-native';
 import HistoryScreen from '../../../src/app/(tabs)/history';
 import { useRecentSearches } from '../../../src/hooks/useRecentSearches';
 
@@ -32,8 +33,9 @@ describe('HistoryScreen (Tab 4)', () => {
     const { getByText } = render(<HistoryScreen />);
 
     expect(getByText('NO RECENT SEARCHES')).toBeTruthy();
-    expect(getByText('Your history is clean.')).toBeTruthy();
-    expect(getByText('Start Searching ↗')).toBeTruthy();
+    expect(getByText('Your search history is empty.')).toBeTruthy();
+    expect(getByText('Your recent dictionary searches will appear here.')).toBeTruthy();
+    expect(getByText(/Start searching/i)).toBeTruthy();
   });
 
   it('renders recent searches and navigates to Search tab with query parameter on tap', () => {
@@ -57,7 +59,8 @@ describe('HistoryScreen (Tab 4)', () => {
     });
   });
 
-  it('calls clearRecents when Clear all button is pressed', () => {
+  it('prompts confirmation and calls clearRecents when Clear all button is pressed', () => {
+    const alertSpy = jest.spyOn(Alert, 'alert');
     (useRecentSearches as jest.Mock).mockReturnValue({
       recents: ['dharma'],
       isLoading: false,
@@ -69,6 +72,33 @@ describe('HistoryScreen (Tab 4)', () => {
 
     fireEvent.press(getByText('Clear all'));
 
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Clear Search History',
+      'Are you sure you want to delete all recent search queries?',
+      expect.any(Array)
+    );
+
+    // Trigger the confirmation action callback
+    const buttons = alertSpy.mock.calls[0][2];
+    const confirmBtn = buttons?.find((btn: any) => btn.text === 'Clear All');
+    confirmBtn?.onPress?.();
+
     expect(mockClearRecents).toHaveBeenCalledTimes(1);
+    alertSpy.mockRestore();
+  });
+
+  it('renders matching entry preview for recognized dictionary headword query', async () => {
+    (useRecentSearches as jest.Mock).mockReturnValue({
+      recents: ['dharma'],
+      isLoading: false,
+      addRecent: jest.fn(),
+      clearRecents: mockClearRecents,
+    });
+
+    const { findByText, getByText } = render(<HistoryScreen />);
+
+    expect(getByText('dharma')).toBeTruthy();
+    // Since 'dharma' matches entry id 11, it shows preview containing headword and transliteration
+    expect(await findByText(/धर्म \(dharma\)/)).toBeTruthy();
   });
 });

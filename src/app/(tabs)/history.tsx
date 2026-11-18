@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   SafeAreaView,
@@ -10,13 +11,15 @@ import {
   View,
 } from 'react-native';
 import { AppHeader } from '../../components/AppHeader';
+import { EmptyState } from '../../components/EmptyState';
+import { searchEntries } from '../../engine/search';
 import { useDictionary } from '../../hooks/useDictionary';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { borderRadius, colors, spacing, typography } from '../../theme/tokens';
 
 export default function HistoryScreen() {
   const router = useRouter();
-  const { entries } = useDictionary();
+  const { entries, index } = useDictionary();
   const { recents, clearRecents, isLoading } = useRecentSearches();
 
   const totalCount = entries.length > 0 ? entries.length : 70;
@@ -32,6 +35,37 @@ export default function HistoryScreen() {
   const handleGoToSearch = () => {
     router.push('/(tabs)');
   };
+
+  const handleClearAll = () => {
+    Alert.alert(
+      'Clear Search History',
+      'Are you sure you want to delete all recent search queries?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: () => {
+            clearRecents();
+          },
+        },
+      ]
+    );
+  };
+
+  // Resolve lightweight secondary match preview if search engine can resolve it reliably
+  const getMatchPreview = useCallback(
+    (queryText: string): string | null => {
+      if (!index || !queryText.trim()) return null;
+      const results = searchEntries(index, queryText.trim());
+      if (results.length > 0 && results[0].score >= 70) {
+        const top = results[0].entry;
+        return `${top.headword} (${top.transliteration}) — ${top.meanings[0]}`;
+      }
+      return null;
+    },
+    [index]
+  );
 
   if (isLoading) {
     return (
@@ -53,22 +87,32 @@ export default function HistoryScreen() {
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <View style={styles.titleRow}>
-              <View>
+              <View style={styles.titleWithBadge}>
                 <Text style={styles.kicker}>SEARCH LOG</Text>
-                <Text style={styles.title}>History</Text>
+                <Text style={styles.title} accessibilityRole="header">
+                  Search <Text>History</Text>
+                </Text>
               </View>
 
-              {recents.length > 0 && (
-                <Pressable
-                  style={styles.clearButton}
-                  onPress={clearRecents}
-                  accessibilityRole="button"
-                  accessibilityLabel="Clear all search history"
-                  hitSlop={6}
-                >
-                  <Text style={styles.clearButtonText}>Clear all</Text>
-                </Pressable>
-              )}
+              <View style={styles.headerActions}>
+                {recents.length > 0 && (
+                  <View style={styles.countBadge}>
+                    <Text style={styles.countText}>{recents.length} recent</Text>
+                  </View>
+                )}
+
+                {recents.length > 0 && (
+                  <Pressable
+                    style={styles.clearButton}
+                    onPress={handleClearAll}
+                    accessibilityRole="button"
+                    accessibilityLabel="Clear all search history"
+                    hitSlop={6}
+                  >
+                    <Text style={styles.clearButtonText}>Clear all</Text>
+                  </Pressable>
+                )}
+              </View>
             </View>
 
             <Text style={styles.description}>
@@ -76,47 +120,48 @@ export default function HistoryScreen() {
             </Text>
           </View>
         }
-        renderItem={({ item, index }) => (
-          <Pressable
-            style={({ pressed }) => [
-              styles.historyRow,
-              pressed && styles.historyRowPressed,
-            ]}
-            onPress={() => handleSelectRecentQuery(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Search again for query ${item}`}
-          >
-            <View style={styles.indexBadge}>
-              <Text style={styles.indexText}>{index + 1}</Text>
-            </View>
-
-            <View style={styles.queryContainer}>
-              <Text style={styles.queryText}>{item}</Text>
-              <Text style={styles.querySubtext}>Tap to re-run search</Text>
-            </View>
-
-            <View style={styles.arrowContainer}>
-              <Text style={styles.arrowIcon}>↗</Text>
-            </View>
-          </Pressable>
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptySymbol}>◷</Text>
-            <Text style={styles.emptyKicker}>NO RECENT SEARCHES</Text>
-            <Text style={styles.emptyTitle}>Your history is clean.</Text>
-            <Text style={styles.emptyDescription}>
-              Queries you enter in the Search tab will be logged here for quick retrieval.
-            </Text>
+        renderItem={({ item }) => {
+          const preview = getMatchPreview(item);
+          return (
             <Pressable
-              style={styles.startSearchButton}
-              onPress={handleGoToSearch}
+              style={({ pressed }) => [
+                styles.historyRow,
+                pressed && styles.historyRowPressed,
+              ]}
+              onPress={() => handleSelectRecentQuery(item)}
               accessibilityRole="button"
-              accessibilityLabel="Start searching"
+              accessibilityLabel={`Search again for query ${item}`}
             >
-              <Text style={styles.startSearchButtonText}>Start Searching ↗</Text>
+              <View style={styles.searchIconBadge}>
+                <Text style={styles.searchIconGlyph}>⌕</Text>
+              </View>
+
+              <View style={styles.queryContainer}>
+                <Text style={styles.queryText}>{item}</Text>
+                {preview ? (
+                  <Text style={styles.previewText} numberOfLines={1}>
+                    {preview}
+                  </Text>
+                ) : (
+                  <Text style={styles.querySubtext}>Tap to re-run search</Text>
+                )}
+              </View>
+
+              <View style={styles.arrowContainer}>
+                <Text style={styles.arrowIcon}>↗</Text>
+              </View>
             </Pressable>
-          </View>
+          );
+        }}
+        ListEmptyComponent={
+          <EmptyState
+            type="no_history"
+            title="Your search history is empty."
+            description="Your recent dictionary searches will appear here."
+            actionLabel="Start searching ↗"
+            onAction={handleGoToSearch}
+            onClearSearch={handleGoToSearch}
+          />
         }
       />
     </SafeAreaView>
@@ -153,6 +198,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  titleWithBadge: {
+    flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   kicker: {
     fontSize: typography.fontSize.badge,
     color: colors.primaryCobalt,
@@ -164,6 +217,17 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
     color: colors.primaryText,
     marginTop: 2,
+  },
+  countBadge: {
+    backgroundColor: colors.paperDeep,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.pill,
+  },
+  countText: {
+    fontSize: typography.fontSize.caption - 1,
+    color: colors.muted,
+    fontWeight: typography.fontWeight.bold,
   },
   clearButton: {
     paddingHorizontal: spacing.sm + 2,
@@ -196,18 +260,18 @@ const styles = StyleSheet.create({
   historyRowPressed: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
-  indexBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+  searchIconBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: colors.paperDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  indexText: {
-    fontSize: typography.fontSize.badge,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.muted,
+  searchIconGlyph: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primaryCobalt,
   },
   queryContainer: {
     flex: 1,
@@ -216,6 +280,11 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.bodyLarge,
     fontWeight: typography.fontWeight.semibold,
     color: colors.primaryText,
+  },
+  previewText: {
+    fontSize: typography.fontSize.caption,
+    color: colors.semanticEmerald,
+    marginTop: 2,
   },
   querySubtext: {
     fontSize: typography.fontSize.caption - 1,
@@ -229,48 +298,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primaryCobalt,
     fontWeight: 'bold',
-  },
-  emptyContainer: {
-    paddingVertical: spacing.huge,
-    paddingHorizontal: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptySymbol: {
-    fontSize: 48,
-    color: '#c4c4b9',
-    marginBottom: spacing.md,
-  },
-  emptyKicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-    marginBottom: spacing.xs,
-  },
-  emptyTitle: {
-    fontSize: typography.fontSize.heading,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.primaryText,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  emptyDescription: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    textAlign: 'center',
-    lineHeight: 18,
-    maxWidth: 280,
-  },
-  startSearchButton: {
-    marginTop: spacing.lg,
-    paddingBottom: 2,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.primaryCobalt,
-  },
-  startSearchButtonText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
   },
 });

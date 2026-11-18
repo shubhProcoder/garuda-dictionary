@@ -12,29 +12,60 @@ import { AppHeader } from '../../components/AppHeader';
 import { EmptyState } from '../../components/EmptyState';
 import { EntryCard } from '../../components/EntryCard';
 import { POSFilter } from '../../components/POSFilter';
-import { filterByPartOfSpeech } from '../../engine/filter';
+import { SearchBar } from '../../components/SearchBar';
+import { filterByPartOfSpeech, filterSearchResultsByPOS } from '../../engine/filter';
+import { searchEntries } from '../../engine/search';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
 import { colors, spacing, typography } from '../../theme/tokens';
-import { DictionaryEntry, POSFilterValue } from '../../types/dictionary';
+import { DictionaryEntry, POSFilterValue, SearchResult } from '../../types/dictionary';
 
 export default function LexiconScreen() {
   const router = useRouter();
-  const { entries, isLoading, error } = useDictionary();
+  const { entries, index, isLoading, error } = useDictionary();
   const { isBookmarked } = useBookmarks();
   const [posFilter, setPosFilter] = useState<POSFilterValue>('all');
+  const [localQuery, setLocalQuery] = useState('');
 
   const totalCount = entries.length > 0 ? entries.length : 70;
 
-  const filteredEntries = useMemo(() => {
-    return filterByPartOfSpeech(entries, posFilter);
-  }, [entries, posFilter]);
+  // Calculate POS counts dynamically from actual dictionary entries
+  const posCounts = useMemo(() => {
+    return {
+      all: entries.length,
+      noun: entries.filter((e) => e.pos.toLowerCase().startsWith('noun')).length,
+      verb: entries.filter((e) => e.pos.toLowerCase() === 'verb').length,
+      adjective: entries.filter((e) => e.pos.toLowerCase() === 'adjective').length,
+    };
+  }, [entries]);
+
+  // Unified items list: uses engine searchEntries when localQuery is present,
+  // or filterByPartOfSpeech when idle, avoiding conflicting ranking algorithms.
+  const displayedItems = useMemo((): Array<{ entry: DictionaryEntry; searchResult?: SearchResult }> => {
+    const trimmedQuery = localQuery.trim();
+    if (trimmedQuery.length > 0 && index) {
+      const searchResults = searchEntries(index, trimmedQuery);
+      const filteredResults = filterSearchResultsByPOS(searchResults, posFilter);
+      return filteredResults.map((res) => ({
+        entry: res.entry,
+        searchResult: res,
+      }));
+    }
+
+    const posFiltered = filterByPartOfSpeech(entries, posFilter);
+    return posFiltered.map((entry) => ({ entry }));
+  }, [entries, index, localQuery, posFilter]);
 
   const handleSelectEntry = (entry: DictionaryEntry) => {
     router.push({
       pathname: '/entry/[id]',
       params: { id: String(entry.id) },
     });
+  };
+
+  const handleResetFilters = () => {
+    setLocalQuery('');
+    setPosFilter('all');
   };
 
   if (isLoading) {
@@ -60,44 +91,72 @@ export default function LexiconScreen() {
       <AppHeader totalCount={totalCount} />
 
       <FlatList
-        data={filteredEntries}
-        keyExtractor={(item) => String(item.id)}
+        data={displayedItems}
+        keyExtractor={(item) => String(item.entry.id)}
         contentContainerStyle={styles.listContent}
+        keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <View style={styles.titleRow}>
               <View>
                 <Text style={styles.kicker}>THE COLLECTION</Text>
-                <Text style={styles.title}>Lexicon</Text>
+                <Text style={styles.title} accessibilityRole="header">
+                  The <Text>Lexicon</Text>
+                </Text>
               </View>
               <View style={styles.countBadge}>
                 <Text style={styles.countText}>
-                  {filteredEntries.length} of {totalCount}
+                  {displayedItems.length} of {totalCount}
                 </Text>
               </View>
             </View>
 
             <Text style={styles.description}>
-              Browse all verified entries. Filter by grammatical category.
+              Browse all verified entries. Filter by grammatical category or search by term.
             </Text>
+
+            {/* Scoped local search */}
+            <View style={styles.searchSection}>
+              <SearchBar
+                value={localQuery}
+                onChangeText={setLocalQuery}
+                onClear={() => setLocalQuery('')}
+                placeholder="Filter words in lexicon..."
+                accessibilityLabel="Filter words in lexicon"
+              />
+            </View>
 
             {/* Part of Speech Filter */}
             <View style={styles.filterSection}>
-              <POSFilter value={posFilter} onChange={setPosFilter} />
+              <POSFilter
+                value={posFilter}
+                onChange={setPosFilter}
+                counts={posCounts}
+              />
             </View>
           </View>
         }
         renderItem={({ item }) => (
           <EntryCard
-            entry={item}
-            isBookmarked={isBookmarked(item.id)}
-            onPress={() => handleSelectEntry(item)}
+            entry={item.entry}
+            searchResult={item.searchResult}
+            isBookmarked={isBookmarked(item.entry.id)}
+            onPress={() => handleSelectEntry(item.entry)}
           />
         )}
         ListEmptyComponent={
           <EmptyState
             type="no_matches"
-            onClearSearch={() => setPosFilter('all')}
+            query={localQuery}
+            title={localQuery ? "No matching words found." : "No words in this category."}
+            description={
+              localQuery
+                ? `No lexicon entries matched "${localQuery}". Try a different spelling or clear the filter.`
+                : "There are no entries matching the selected grammatical category."
+            }
+            actionLabel="Reset filters ↗"
+            onAction={handleResetFilters}
+            onClearSearch={handleResetFilters}
           />
         }
       />
@@ -174,6 +233,9 @@ const styles = StyleSheet.create({
     color: colors.muted,
     marginTop: spacing.xs,
     lineHeight: 16,
+  },
+  searchSection: {
+    marginTop: spacing.md,
   },
   filterSection: {
     marginTop: spacing.md,

@@ -19,7 +19,13 @@ import { DictionaryEntry } from '../../types/dictionary';
 export default function SavedScreen() {
   const router = useRouter();
   const { entries, isLoading: isDictLoading } = useDictionary();
-  const { bookmarks, isBookmarked, getSavedEntries, isLoading: isBookmarksLoading } = useBookmarks();
+  const {
+    bookmarks,
+    isBookmarked,
+    getSavedEntries,
+    toggleBookmark,
+    isLoading: isBookmarksLoading,
+  } = useBookmarks();
 
   const totalCount = entries.length > 0 ? entries.length : 70;
   const savedEntries = getSavedEntries(entries);
@@ -32,7 +38,7 @@ export default function SavedScreen() {
   };
 
   const handleBrowseLexicon = () => {
-    router.push('/lexicon');
+    router.push('/(tabs)/lexicon');
   };
 
   if (isDictLoading || isBookmarksLoading) {
@@ -57,7 +63,9 @@ export default function SavedScreen() {
             <View style={styles.titleRow}>
               <View>
                 <Text style={styles.kicker}>YOUR COLLECTION</Text>
-                <Text style={styles.title}>Saved Words</Text>
+                <Text style={styles.title} accessibilityRole="header">
+                  Saved Words
+                </Text>
               </View>
               <View style={[styles.countBadge, savedEntries.length > 0 && styles.countBadgeActive]}>
                 <Text style={[styles.countText, savedEntries.length > 0 && styles.countTextActive]}>
@@ -75,11 +83,16 @@ export default function SavedScreen() {
             entry={item}
             isBookmarked={isBookmarked(item.id)}
             onPress={() => handleSelectEntry(item)}
+            onToggleBookmark={() => toggleBookmark(item.id)}
           />
         )}
         ListEmptyComponent={
           <EmptyState
             type="no_saved"
+            title="Your collection starts here."
+            description="Save words while exploring Garuda and they will appear here."
+            actionLabel="Explore the dictionary ↗"
+            onAction={handleBrowseLexicon}
             onClearSearch={handleBrowseLexicon}
           />
         }

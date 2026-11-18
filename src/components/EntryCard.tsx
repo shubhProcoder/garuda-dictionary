@@ -8,6 +8,7 @@ export interface EntryCardProps {
   searchResult?: SearchResult;
   isBookmarked?: boolean;
   onPress: () => void;
+  onToggleBookmark?: () => void;
 }
 
 export const EntryCard: React.FC<EntryCardProps> = ({
@@ -15,6 +16,7 @@ export const EntryCard: React.FC<EntryCardProps> = ({
   searchResult,
   isBookmarked = false,
   onPress,
+  onToggleBookmark,
 }) => {
   const primaryMeaning = entry.meanings[0] ?? '';
   const cleanPos = entry.pos.replace(/\s*\([^)]*\)/g, '');
@@ -38,7 +40,30 @@ export const EntryCard: React.FC<EntryCardProps> = ({
           <Text style={styles.transliteration} numberOfLines={1}>
             {entry.transliteration}
           </Text>
-          {isBookmarked && <Text style={styles.bookmarkStar}>★</Text>}
+          {onToggleBookmark ? (
+            <Pressable
+              onPress={onToggleBookmark}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isBookmarked
+                  ? `Remove ${entry.headword} from saved words`
+                  : `Save ${entry.headword}`
+              }
+              hitSlop={8}
+              style={styles.bookmarkButton}
+            >
+              <Text
+                style={[
+                  styles.bookmarkButtonIcon,
+                  isBookmarked && styles.bookmarkButtonIconActive,
+                ]}
+              >
+                {isBookmarked ? '★' : '☆'}
+              </Text>
+            </Pressable>
+          ) : isBookmarked ? (
+            <Text style={styles.bookmarkStar}>★</Text>
+          ) : null}
         </View>
 
         <Text style={styles.meaning} numberOfLines={1}>
@@ -104,6 +129,19 @@ const styles = StyleSheet.create({
   bookmarkStar: {
     fontSize: 12,
     color: colors.blue,
+  },
+  bookmarkButton: {
+    paddingHorizontal: 2,
+    paddingVertical: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bookmarkButtonIcon: {
+    fontSize: 14,
+    color: colors.muted,
+  },
+  bookmarkButtonIconActive: {
+    color: colors.primaryCobalt,
   },
   meaning: {
     fontSize: typography.fontSize.body,
