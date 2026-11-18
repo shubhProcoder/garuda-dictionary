@@ -105,6 +105,25 @@ export default function SearchScreen() {
     [query, addRecent, router]
   );
 
+  const handleSelectSearchResult = useCallback(
+    (result: SearchResult) => {
+      if (query.trim()) {
+        addRecent(query.trim());
+      }
+      router.push({
+        pathname: '/entry/[id]',
+        params: {
+          id: String(result.entry.id),
+          query: query.trim(),
+          matchType: result.matchType,
+          matchedField: result.matchedField,
+          matchExplanation: result.matchExplanation,
+        },
+      });
+    },
+    [query, addRecent, router]
+  );
+
   const handleSelectRecentQuery = useCallback(
     (selectedQuery: string) => {
       setQuery(selectedQuery);
@@ -210,7 +229,7 @@ export default function SearchScreen() {
             entry={item.entry}
             searchResult={hasQuery ? item : undefined}
             isBookmarked={isBookmarked(item.entry.id)}
-            onPress={() => handleSelectEntry(item.entry)}
+            onPress={() => handleSelectSearchResult(item)}
           />
         )}
         ListEmptyComponent={
