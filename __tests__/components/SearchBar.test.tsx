@@ -7,7 +7,7 @@ describe('SearchBar component tests', () => {
     const { getByPlaceholderText } = render(
       <SearchBar value="" onChangeText={jest.fn()} onClear={jest.fn()} />
     );
-    expect(getByPlaceholderText('Try dharma, dharm, peace, or धर्म')).toBeTruthy();
+    expect(getByPlaceholderText('Search dharma, धर्म or duty...')).toBeTruthy();
   });
 
   it('calls onChangeText when typing text', () => {
@@ -16,7 +16,7 @@ describe('SearchBar component tests', () => {
       <SearchBar value="" onChangeText={onChangeText} onClear={jest.fn()} />
     );
 
-    fireEvent.changeText(getByPlaceholderText('Try dharma, dharm, peace, or धर्म'), 'dharma');
+    fireEvent.changeText(getByPlaceholderText('Search dharma, धर्म or duty...'), 'dharma');
     expect(onChangeText).toHaveBeenCalledWith('dharma');
   });
 

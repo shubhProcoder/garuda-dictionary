@@ -20,11 +20,36 @@ interface WordOfTheDayProps {
   onPress: (entry: DictionaryEntry) => void;
 }
 
-/** Returns today's word-of-the-day index (UTC day counter mod dataset size). */
-export function getTodayIndex(total: number): number {
-  if (total === 0) return 0;
-  const dayIndex = Math.floor(Date.now() / 86_400_000);
-  return dayIndex % total;
+/**
+ * Calculates a deterministic day number from the user's LOCAL calendar date
+ * components (year, month, date).
+ *
+ * Using Date.UTC with the local calendar components (getFullYear, getMonth, getDate)
+ * computes the exact 24-hour day count since Unix epoch for that local calendar day.
+ * This ensures:
+ * 1. The selection depends strictly on the user's local date.
+ * 2. It rotates at local midnight, not UTC midnight.
+ * 3. It transitions correctly across month and year boundaries.
+ * 4. It is immune to daylight-saving transitions.
+ */
+export function getLocalDayNumber(date: Date = new Date()): number {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  return Math.floor(Date.UTC(year, month, day) / 86_400_000);
+}
+
+/**
+ * Returns today's word-of-the-day index based on the user's LOCAL calendar date.
+ *
+ * @param total Total number of entries in the dictionary.
+ * @param date Local date (defaults to `new Date()`).
+ * @returns Deterministic index in [0, total - 1].
+ */
+export function getTodayIndex(total: number, date: Date = new Date()): number {
+  if (total <= 0) return 0;
+  const dayNumber = getLocalDayNumber(date);
+  return ((dayNumber % total) + total) % total;
 }
 
 export const WordOfTheDay: React.FC<WordOfTheDayProps> = ({ entries, onPress }) => {

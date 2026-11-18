@@ -87,20 +87,21 @@ describe('Phase 3 — Search Discovery', () => {
     });
   });
 
-  // 5. ALL VERIFIED WORDS section heading is visible in idle
-  it('5. ALL VERIFIED WORDS section heading is visible in idle state', async () => {
+  // 5. Explore Dictionary section with View All action is visible in idle state
+  it('5. Explore Dictionary section with View All action is visible in idle state', async () => {
     const { getByText } = render(<SearchScreen />);
     await waitFor(() => {
-      expect(getByText('ALL VERIFIED WORDS')).toBeTruthy();
+      expect(getByText('EXPLORE THE DICTIONARY')).toBeTruthy();
+      expect(getByText('View all →')).toBeTruthy();
     });
   });
 
-  // 6. SEARCH RESULTS heading appears when typing
+  // 6. SEARCH RESULTS heading appears when query is active
   it('6. SEARCH RESULTS heading appears when query is active', async () => {
-    const { getByText, getByLabelText } = render(<SearchScreen />);
+    const { getByText, getByLabelText, queryByText } = render(<SearchScreen />);
 
     await waitFor(() => {
-      expect(getByText('ALL VERIFIED WORDS')).toBeTruthy();
+      expect(getByText('WORD OF THE DAY')).toBeTruthy();
     });
 
     const input = getByLabelText('Search Hindi words in Devanagari, Roman, or English');
@@ -108,6 +109,7 @@ describe('Phase 3 — Search Discovery', () => {
 
     await waitFor(() => {
       expect(getByText('SEARCH RESULTS')).toBeTruthy();
+      expect(queryByText('EXPLORE THE DICTIONARY')).toBeNull();
     });
   });
 
@@ -126,9 +128,7 @@ describe('Phase 3 — Search Discovery', () => {
   // 8. History route parameter still populates search
   it('8. History route parameter populates the search input', () => {
     (useLocalSearchParams as jest.Mock).mockReturnValue({ q: 'karma' });
-    const { getByDisplayValue, getAllByDisplayValue } = render(<SearchScreen />);
-    // At least one input should have value "karma"
-    const inputs = getAllByDisplayValue('karma');
-    expect(inputs.length).toBeGreaterThan(0);
+    const { getByDisplayValue } = render(<SearchScreen />);
+    expect(getByDisplayValue('karma')).toBeTruthy();
   });
 });

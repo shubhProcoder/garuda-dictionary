@@ -84,22 +84,13 @@ export default function SearchScreen() {
     return entries[getTodayIndex(entries.length)] ?? null;
   }, [entries]);
 
-  // Display results when searching, or all entries when idle
+  // Display results when searching, empty when idle
   const displayedItems = useMemo(() => {
     if (hasQuery) {
       return results;
     }
-    // Idle state: show all entries as default browsable dictionary list
-    return entries.map(
-      (entry): SearchResult => ({
-        entry,
-        score: 100,
-        matchType: 'exact_devanagari',
-        matchedField: 'headword',
-        matchExplanation: '',
-      })
-    );
-  }, [hasQuery, results, entries]);
+    return [];
+  }, [hasQuery, results]);
 
   const handleSelectEntry = useCallback(
     (entry: DictionaryEntry) => {
@@ -172,8 +163,11 @@ export default function SearchScreen() {
 
             {/* ── IDLE DISCOVERY STATE ── */}
             {!hasQuery && (
-              <>
-                {/* Word of the Day */}
+              <View style={styles.idleDiscoveryContainer}>
+                {/* 2. Suggested Queries */}
+                <SuggestedQueries onSelect={setQuery} />
+
+                {/* 3. Word of the Day */}
                 {wotdEntry && (
                   <WordOfTheDay
                     entries={entries}
@@ -181,27 +175,34 @@ export default function SearchScreen() {
                   />
                 )}
 
-                {/* Recent Searches */}
+                {/* 4. Recent Searches */}
                 <RecentSearches
                   recents={recents}
                   onSelectQuery={handleSelectRecentQuery}
                   onClear={clearRecents}
                 />
 
-                {/* Suggested Queries */}
-                <SuggestedQueries onSelect={setQuery} />
-              </>
+                {/* 5. Compact Explore Dictionary (5 real entries, excludes WOTD, View All action) */}
+                {entries.length > 0 && (
+                  <ExploreDictionary
+                    entries={entries}
+                    onViewAll={handleNavigateToLexicon}
+                    onSelectEntry={handleSelectEntry}
+                    excludeId={wotdEntry?.id}
+                  />
+                )}
+              </View>
             )}
 
-            {/* Results Counter / Section Kicker */}
-            <View style={styles.sectionHeadingRow}>
-              <Text style={styles.sectionKicker}>
-                {hasQuery ? 'SEARCH RESULTS' : 'ALL VERIFIED WORDS'}
-              </Text>
-              <Text style={styles.sectionCount}>
-                {displayedItems.length} {displayedItems.length === 1 ? 'word' : 'words'}
-              </Text>
-            </View>
+            {/* ── ACTIVE SEARCH RESULTS HEADING ── */}
+            {hasQuery && (
+              <View style={styles.sectionHeadingRow}>
+                <Text style={styles.sectionKicker}>SEARCH RESULTS</Text>
+                <Text style={styles.sectionCount}>
+                  {displayedItems.length} {displayedItems.length === 1 ? 'word' : 'words'}
+                </Text>
+              </View>
+            )}
           </View>
         }
         renderItem={({ item }) => (
@@ -213,25 +214,16 @@ export default function SearchScreen() {
           />
         )}
         ListEmptyComponent={
-          <EmptyState
-            type="no_matches"
-            onClearSearch={hasQuery ? clearQuery : undefined}
-            query={query}
-            onSelectSuggestion={hasQuery ? setQuery : undefined}
-          />
-        }
-        ListFooterComponent={
-          !hasQuery && entries.length > 0 ? (
-            <View style={styles.exploreSection}>
-              <ExploreDictionary
-                entries={entries}
-                onViewAll={handleNavigateToLexicon}
-                onSelectEntry={handleSelectEntry}
-                excludeId={wotdEntry?.id}
-              />
-            </View>
+          hasQuery ? (
+            <EmptyState
+              type="no_matches"
+              onClearSearch={clearQuery}
+              query={query}
+              onSelectSuggestion={setQuery}
+            />
           ) : null
         }
+        ListFooterComponent={null}
       />
 
       {/* First-Run Onboarding Modal Overlay */}
@@ -305,7 +297,7 @@ const styles = StyleSheet.create({
     color: colors.primaryCobalt,
     fontWeight: typography.fontWeight.semibold,
   },
-  exploreSection: {
-    paddingHorizontal: 0,
+  idleDiscoveryContainer: {
+    marginTop: spacing.xs,
   },
 });

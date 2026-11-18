@@ -42,7 +42,7 @@ describe('Phase 2 Onboarding & Splash Lifecycle Regression Suite', () => {
 
     const { queryByText, getByPlaceholderText } = render(<SearchScreen />);
 
-    expect(getByPlaceholderText('Try dharma, dharm, peace, or धर्म')).toBeTruthy();
+    expect(getByPlaceholderText('Search dharma, धर्म or duty...')).toBeTruthy();
     expect(queryByText('Welcome to Garuda')).toBeNull();
   });
 
@@ -102,7 +102,7 @@ describe('Phase 2 Onboarding & Splash Lifecycle Regression Suite', () => {
     jest.spyOn(AsyncStorage, 'getItem').mockRejectedValueOnce(new Error('Read error'));
 
     const { getByPlaceholderText } = render(<SearchScreen />);
-    expect(getByPlaceholderText('Try dharma, dharm, peace, or धर्म')).toBeTruthy();
+    expect(getByPlaceholderText('Search dharma, धर्म or duty...')).toBeTruthy();
   });
 
   // 8. Storage write failure does not permanently block dismissal.
@@ -153,7 +153,7 @@ describe('Phase 2 Onboarding & Splash Lifecycle Regression Suite', () => {
     });
 
     // Search bar is ready and responsive
-    const searchInput = getByPlaceholderText('Try dharma, dharm, peace, or धर्म');
+    const searchInput = getByPlaceholderText('Search dharma, धर्म or duty...');
     fireEvent.changeText(searchInput, 'dharma');
 
     // Results render

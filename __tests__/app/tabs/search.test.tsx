@@ -22,36 +22,33 @@ describe('SearchScreen (Tab 1)', () => {
     jest.spyOn(OnboardingStorage, 'setOnboardingCompleted').mockResolvedValue();
   });
 
-  it('renders search bar, header, and all entries initially for returning user', async () => {
-    const { getByText, getAllByText, getByPlaceholderText, queryByText } = render(<SearchScreen />);
+  it('renders search bar, header, and idle discovery content initially for returning user', async () => {
+    const { getByText, getByPlaceholderText, queryByText } = render(<SearchScreen />);
 
-    expect(getByPlaceholderText('Try dharma, dharm, peace, or धर्म')).toBeTruthy();
-    expect(getByText('ALL VERIFIED WORDS')).toBeTruthy();
-    expect(getByText('70 words')).toBeTruthy();
+    expect(getByPlaceholderText('Search dharma, धर्म or duty...')).toBeTruthy();
+    expect(getByText('WORD OF THE DAY')).toBeTruthy();
+    expect(getByText('Try a sample query')).toBeTruthy();
+    expect(getByText('EXPLORE THE DICTIONARY')).toBeTruthy();
 
     // Returning user should NOT see onboarding modal
     expect(queryByText('Welcome to Garuda')).toBeNull();
 
-    await waitFor(() => {
-      expect(getAllByText('शिक्षा').length).toBeGreaterThan(0);
-    });
+    // Full 70-entry list is NOT on search home (it lives in Lexicon)
+    expect(queryByText('ALL VERIFIED WORDS')).toBeNull();
   });
 
-  it('navigates to word detail when an entry card is tapped', async () => {
-    const { getAllByText } = render(<SearchScreen />);
+  it('navigates to word detail when Word of the Day is tapped', async () => {
+    const { getByText } = render(<SearchScreen />);
 
     await waitFor(() => {
-      expect(getAllByText('शिक्षा').length).toBeGreaterThan(0);
+      expect(getByText('WORD OF THE DAY')).toBeTruthy();
     });
 
-    const entries = getAllByText('शिक्षा');
-    // The entry card is the one in the list (last element)
-    const entryCard = entries[entries.length - 1];
-    fireEvent.press(entryCard);
+    fireEvent.press(getByText('WORD OF THE DAY'));
 
     expect(mockPush).toHaveBeenCalledWith({
       pathname: '/entry/[id]',
-      params: { id: '1' },
+      params: { id: expect.any(String) },
     });
   });
 
