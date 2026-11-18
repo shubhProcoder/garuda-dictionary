@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -9,9 +9,10 @@ import {
   View,
 } from 'react-native';
 import { EntryDetail, MatchContext } from '../../components/EntryDetail';
+import { useTheme } from '../../context/ThemeContext';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
-import { colors, spacing, typography } from '../../theme/tokens';
+import { ThemeColors, spacing, typography } from '../../theme/tokens';
 import { MatchType, MatchedField } from '../../types/dictionary';
 
 export default function EntryDetailScreen() {
@@ -23,6 +24,9 @@ export default function EntryDetailScreen() {
     matchedField?: MatchedField;
     matchExplanation?: string;
   }>();
+
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const numericId = params.id ? Number(params.id) : NaN;
 
@@ -88,46 +92,48 @@ export default function EntryDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.canvasPaper,
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.canvasPaper,
-    padding: spacing.xl,
-  },
-  errorIcon: {
-    fontSize: 48,
-    color: colors.muted,
-    marginBottom: spacing.md,
-  },
-  errorTitle: {
-    fontSize: typography.fontSize.heading,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-    marginBottom: spacing.xs,
-  },
-  errorSubtitle: {
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  backButton: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.primaryCobalt,
-    borderRadius: 4,
-  },
-  backButtonText: {
-    color: colors.primaryCobalt,
-    fontSize: typography.fontSize.caption,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-});
+function createStyles(theme: ThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: theme.canvasPaper,
+    },
+    centerContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.canvasPaper,
+      padding: spacing.xl,
+    },
+    errorIcon: {
+      fontSize: 48,
+      color: theme.muted,
+      marginBottom: spacing.md,
+    },
+    errorTitle: {
+      fontSize: typography.fontSize.heading,
+      fontWeight: typography.fontWeight.bold,
+      color: theme.primaryText,
+      marginBottom: spacing.xs,
+    },
+    errorSubtitle: {
+      fontSize: typography.fontSize.body,
+      color: theme.muted,
+      textAlign: 'center',
+      marginBottom: spacing.xl,
+    },
+    backButton: {
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.lg,
+      borderWidth: 1,
+      borderColor: theme.primaryCobalt,
+      borderRadius: 4,
+    },
+    backButtonText: {
+      color: theme.primaryCobalt,
+      fontSize: typography.fontSize.caption,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+  });
+}

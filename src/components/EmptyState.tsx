@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
 
 const SUGGESTIONS = ['dharma', 'धर्म', 'shiksha', 'karma', 'bhaasha'];
 
@@ -27,6 +28,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionLabel,
   onAction,
 }) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const isNoMatches = type === 'no_matches';
   const isNoSaved = type === 'no_saved';
   const isNoHistory = type === 'no_history';
@@ -115,73 +119,75 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: spacing.huge,
-    paddingHorizontal: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  symbol: {
-    fontSize: 48,
-    color: '#c4c4b9',
-    marginBottom: spacing.md,
-  },
-  kicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.blue,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-    marginBottom: spacing.xs,
-  },
-  title: {
-    fontSize: typography.fontSize.heading,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.ink,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  description: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    textAlign: 'center',
-    lineHeight: 18,
-    maxWidth: 280,
-  },
-  clearButton: {
-    marginTop: spacing.lg,
-    paddingBottom: 2,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.blue,
-  },
-  clearButtonText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.blue,
-    fontWeight: typography.fontWeight.bold,
-  },
-  suggestionsContainer: {
-    marginTop: spacing.xl,
-    alignItems: 'center',
-  },
-  suggestionsLabel: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    marginBottom: spacing.sm,
-  },
-  suggestionsRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  suggestionChip: {
-    backgroundColor: colors.elevatedSurface,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: borderRadius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  suggestionText: {
-    fontSize: typography.fontSize.body,
-    color: colors.primaryText,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingVertical: spacing.huge,
+      paddingHorizontal: spacing.xl,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    symbol: {
+      fontSize: 48,
+      color: colors.line,
+      marginBottom: spacing.md,
+    },
+    kicker: {
+      fontSize: typography.fontSize.badge,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1.2,
+      marginBottom: spacing.xs,
+    },
+    title: {
+      fontSize: typography.fontSize.heading,
+      fontWeight: typography.fontWeight.medium,
+      color: colors.primaryText,
+      textAlign: 'center',
+      marginBottom: spacing.sm,
+    },
+    description: {
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      textAlign: 'center',
+      lineHeight: 18,
+      maxWidth: 280,
+    },
+    clearButton: {
+      marginTop: spacing.lg,
+      paddingBottom: 2,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.primaryCobalt,
+    },
+    clearButtonText: {
+      fontSize: typography.fontSize.caption,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+    },
+    suggestionsContainer: {
+      marginTop: spacing.xl,
+      alignItems: 'center',
+    },
+    suggestionsLabel: {
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      marginBottom: spacing.sm,
+    },
+    suggestionsRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    suggestionChip: {
+      backgroundColor: colors.elevatedSurface,
+      borderColor: colors.line,
+      borderWidth: 1,
+      borderRadius: borderRadius.pill,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+    },
+    suggestionText: {
+      fontSize: typography.fontSize.body,
+      color: colors.primaryText,
+    },
+  });
+}

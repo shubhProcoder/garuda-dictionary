@@ -8,10 +8,11 @@
  * and don't repeat the same words every time.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { DictionaryEntry } from '../types/dictionary';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { useReadingSize, useTheme } from '../context/ThemeContext';
+import { ThemeColors, borderRadius, scaleDevanagari, spacing, typography } from '../theme/tokens';
 
 interface ExploreDictionaryProps {
   entries: DictionaryEntry[];
@@ -49,6 +50,10 @@ export const ExploreDictionary: React.FC<ExploreDictionaryProps> = ({
   onSelectEntry,
   excludeId,
 }) => {
+  const { colors } = useTheme();
+  const { devanagariScale } = useReadingSize();
+  const styles = useMemo(() => createStyles(colors, devanagariScale), [colors, devanagariScale]);
+
   const sample = getSampleEntries(entries, excludeId, SAMPLE_SIZE);
   if (sample.length === 0) return null;
 
@@ -102,72 +107,76 @@ export const ExploreDictionary: React.FC<ExploreDictionaryProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  heading: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  viewAll: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.medium,
-  },
-  scrollContent: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  card: {
-    width: 136,
-    backgroundColor: colors.elevatedSurface,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  cardPressed: {
-    backgroundColor: colors.paper,
-  },
-  headword: {
-    fontSize: typography.fontSize.subheading,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.ink,
-    lineHeight: 26,
-  },
-  transliteration: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    fontFamily: 'monospace',
-  },
-  meaning: {
-    fontSize: typography.fontSize.body,
-    color: colors.ink,
-    fontWeight: typography.fontWeight.medium,
-  },
-  posBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.paperDeep,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-    marginTop: spacing.xs,
-  },
-  posText: {
-    fontSize: typography.fontSize.badge - 1,
-    color: colors.muted,
-    textTransform: 'uppercase',
-    fontWeight: typography.fontWeight.bold,
-  },
-});
+function createStyles(colors: ThemeColors, devanagariScale: number) {
+  const scaledHeadwordSize = scaleDevanagari(typography.fontSize.subheading, devanagariScale);
+
+  return StyleSheet.create({
+    container: {
+      marginTop: spacing.lg,
+      marginBottom: spacing.xl,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.sm,
+    },
+    heading: {
+      fontSize: typography.fontSize.badge,
+      color: colors.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    viewAll: {
+      fontSize: typography.fontSize.caption,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.medium,
+    },
+    scrollContent: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    card: {
+      width: 136,
+      backgroundColor: colors.elevatedSurface,
+      borderRadius: borderRadius.md,
+      borderWidth: 1,
+      borderColor: colors.line,
+      padding: spacing.md,
+      gap: spacing.xs,
+    },
+    cardPressed: {
+      backgroundColor: colors.paper,
+    },
+    headword: {
+      fontSize: scaledHeadwordSize,
+      fontWeight: typography.fontWeight.semibold,
+      color: colors.primaryText,
+      lineHeight: Math.round(scaledHeadwordSize * 1.3),
+    },
+    transliteration: {
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      fontFamily: 'monospace',
+    },
+    meaning: {
+      fontSize: typography.fontSize.body,
+      color: colors.primaryText,
+      fontWeight: typography.fontWeight.medium,
+    },
+    posBadge: {
+      alignSelf: 'flex-start',
+      backgroundColor: colors.paperDeep,
+      paddingHorizontal: spacing.xs,
+      paddingVertical: 2,
+      borderRadius: borderRadius.xs,
+      marginTop: spacing.xs,
+    },
+    posText: {
+      fontSize: typography.fontSize.badge - 1,
+      color: colors.muted,
+      textTransform: 'uppercase',
+      fontWeight: typography.fontWeight.bold,
+    },
+  });
+}

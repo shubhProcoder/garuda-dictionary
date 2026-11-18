@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   Animated,
@@ -10,7 +10,8 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
 
 export interface FirstRunWelcomeProps {
   visible: boolean;
@@ -24,6 +25,8 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
   onSkip,
 }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [isDismissing, setIsDismissing] = useState(false);
 
   // Animation values
@@ -238,187 +241,189 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  overlayContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(17, 24, 39, 0.65)',
-  },
-  sheet: {
-    backgroundColor: colors.canvasPaper,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: colors.line,
-    maxHeight: '88%',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 12,
-  },
-  handleContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-  },
-  dragHandle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.line,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.sm,
-  },
-  brandHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  brandMark: {
-    width: 38,
-    height: 38,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.primaryCobalt,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.limeHighlight,
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  brandMarkText: {
-    fontSize: 20,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.elevatedSurface,
-  },
-  brandName: {
-    fontSize: typography.fontSize.heading,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-    letterSpacing: 1.5,
-  },
-  headline: {
-    fontSize: typography.fontSize.heading + 2,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  primaryMessage: {
-    fontSize: typography.fontSize.bodyLarge,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.primaryCobalt,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  supportingCopy: {
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: spacing.lg,
-    paddingHorizontal: spacing.sm,
-  },
-  demonstrationsContainer: {
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  demoCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.elevatedSurface,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm + 2,
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
-  },
-  demoBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.paperDeep,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  demoBadgeText: {
-    fontSize: typography.fontSize.caption - 1,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryCobalt,
-  },
-  demoContent: {
-    flex: 1,
-  },
-  demoWordDevanagari: {
-    fontSize: typography.fontSize.bodyLarge,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-  },
-  demoWordRoman: {
-    fontSize: typography.fontSize.body,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.primaryCobalt,
-    fontFamily: 'monospace',
-  },
-  demoWordEnglish: {
-    fontSize: typography.fontSize.body,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.semanticEmerald,
-  },
-  demoLabel: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    marginTop: 1,
-  },
-  actionsContainer: {
-    gap: spacing.sm,
-    alignItems: 'center',
-    marginTop: spacing.xs,
-  },
-  primaryButton: {
-    width: '100%',
-    backgroundColor: colors.primaryCobalt,
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primaryCobalt,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  primaryButtonPressed: {
-    backgroundColor: colors.blueDark,
-    transform: [{ scale: 0.99 }],
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  primaryButtonText: {
-    fontSize: typography.fontSize.bodyLarge,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.elevatedSurface,
-    letterSpacing: 0.5,
-  },
-  skipButton: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-  },
-  skipButtonText: {
-    fontSize: typography.fontSize.caption,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.muted,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    overlayContainer: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(17, 24, 39, 0.65)',
+    },
+    sheet: {
+      backgroundColor: colors.canvasPaper,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      borderWidth: 1,
+      borderBottomWidth: 0,
+      borderColor: colors.line,
+      maxHeight: '88%',
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: -4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 16,
+      elevation: 12,
+    },
+    handleContainer: {
+      alignItems: 'center',
+      paddingVertical: spacing.sm,
+    },
+    dragHandle: {
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.line,
+    },
+    scrollContent: {
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.xs,
+      paddingBottom: spacing.sm,
+    },
+    brandHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.sm,
+      marginBottom: spacing.md,
+    },
+    brandMark: {
+      width: 38,
+      height: 38,
+      borderRadius: borderRadius.md,
+      backgroundColor: colors.primaryCobalt,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: colors.limeHighlight,
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: 1,
+      shadowRadius: 0,
+      elevation: 3,
+    },
+    brandMarkText: {
+      fontSize: 20,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.elevatedSurface,
+    },
+    brandName: {
+      fontSize: typography.fontSize.heading,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryText,
+      letterSpacing: 1.5,
+    },
+    headline: {
+      fontSize: typography.fontSize.heading + 2,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryText,
+      textAlign: 'center',
+      marginBottom: spacing.xs,
+    },
+    primaryMessage: {
+      fontSize: typography.fontSize.bodyLarge,
+      fontWeight: typography.fontWeight.semibold,
+      color: colors.primaryCobalt,
+      textAlign: 'center',
+      marginBottom: spacing.xs,
+    },
+    supportingCopy: {
+      fontSize: typography.fontSize.body,
+      color: colors.muted,
+      textAlign: 'center',
+      lineHeight: 20,
+      marginBottom: spacing.lg,
+      paddingHorizontal: spacing.sm,
+    },
+    demonstrationsContainer: {
+      gap: spacing.sm,
+      marginBottom: spacing.xl,
+    },
+    demoCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.elevatedSurface,
+      borderWidth: 1,
+      borderColor: colors.line,
+      borderRadius: borderRadius.md,
+      paddingVertical: spacing.sm + 2,
+      paddingHorizontal: spacing.md,
+      gap: spacing.md,
+    },
+    demoBadge: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: colors.paperDeep,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    demoBadgeText: {
+      fontSize: typography.fontSize.caption - 1,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryCobalt,
+    },
+    demoContent: {
+      flex: 1,
+    },
+    demoWordDevanagari: {
+      fontSize: typography.fontSize.bodyLarge,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryText,
+    },
+    demoWordRoman: {
+      fontSize: typography.fontSize.body,
+      fontWeight: typography.fontWeight.semibold,
+      color: colors.primaryCobalt,
+      fontFamily: 'monospace',
+    },
+    demoWordEnglish: {
+      fontSize: typography.fontSize.body,
+      fontWeight: typography.fontWeight.semibold,
+      color: colors.semanticEmerald,
+    },
+    demoLabel: {
+      fontSize: typography.fontSize.badge,
+      color: colors.muted,
+      marginTop: 1,
+    },
+    actionsContainer: {
+      gap: spacing.sm,
+      alignItems: 'center',
+      marginTop: spacing.xs,
+    },
+    primaryButton: {
+      width: '100%',
+      backgroundColor: colors.primaryCobalt,
+      borderRadius: borderRadius.md,
+      paddingVertical: spacing.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: colors.primaryCobalt,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.25,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    primaryButtonPressed: {
+      backgroundColor: colors.blueDark,
+      transform: [{ scale: 0.99 }],
+    },
+    buttonDisabled: {
+      opacity: 0.7,
+    },
+    primaryButtonText: {
+      fontSize: typography.fontSize.bodyLarge,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.white,
+      letterSpacing: 0.5,
+    },
+    skipButton: {
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.md,
+    },
+    skipButtonText: {
+      fontSize: typography.fontSize.caption,
+      fontWeight: typography.fontWeight.semibold,
+      color: colors.muted,
+    },
+  });
+}

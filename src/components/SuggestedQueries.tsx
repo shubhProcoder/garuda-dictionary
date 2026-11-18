@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { spacing, colors, typography, borderRadius } from '../theme/tokens';
+import { useTheme } from '../context/ThemeContext';
+import { spacing, ThemeColors, typography, borderRadius } from '../theme/tokens';
 
 interface SuggestedQueriesProps {
   /** Callback when a suggested query is tapped */
@@ -18,6 +19,9 @@ const SUGGESTED_QUERIES = [
 ];
 
 export const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelect }) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Try a sample query</Text>
@@ -43,31 +47,33 @@ export const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelect }) 
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  heading: {
-    marginBottom: spacing.xs,
-    color: colors.primaryText,
-    fontSize: typography.fontSize.body,
-    fontWeight: typography.fontWeight.medium,
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  chip: {
-    backgroundColor: colors.elevatedSurface,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: borderRadius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  chipText: {
-    color: colors.primaryText,
-    fontSize: typography.fontSize.body,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      marginTop: spacing.sm,
+      marginBottom: spacing.lg,
+    },
+    heading: {
+      marginBottom: spacing.xs,
+      color: colors.primaryText,
+      fontSize: typography.fontSize.body,
+      fontWeight: typography.fontWeight.medium,
+    },
+    chipContainer: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    chip: {
+      backgroundColor: colors.elevatedSurface,
+      borderColor: colors.line,
+      borderWidth: 1,
+      borderRadius: borderRadius.pill,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+    },
+    chipText: {
+      color: colors.primaryText,
+      fontSize: typography.fontSize.body,
+    },
+  });
+}

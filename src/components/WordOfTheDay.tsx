@@ -9,11 +9,12 @@
  * the next day. No editorial curation is claimed.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { DictionaryEntry } from '../types/dictionary';
 import { useBookmarks } from '../hooks/useBookmarks';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { useReadingSize, useTheme } from '../context/ThemeContext';
+import { ThemeColors, borderRadius, scaleDevanagari, spacing, typography } from '../theme/tokens';
 
 interface WordOfTheDayProps {
   entries: DictionaryEntry[];
@@ -54,6 +55,9 @@ export function getTodayIndex(total: number, date: Date = new Date()): number {
 
 export const WordOfTheDay: React.FC<WordOfTheDayProps> = ({ entries, onPress }) => {
   const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { colors } = useTheme();
+  const { devanagariScale } = useReadingSize();
+  const styles = useMemo(() => createStyles(colors, devanagariScale), [colors, devanagariScale]);
 
   if (entries.length === 0) return null;
 
@@ -113,81 +117,85 @@ export const WordOfTheDay: React.FC<WordOfTheDayProps> = ({ entries, onPress }) 
   );
 };
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.elevatedSurface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.line,
-    shadowColor: '#28281c',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  cardPressed: {
-    backgroundColor: colors.paper,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  kicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  bookmarkIcon: {
-    fontSize: 20,
-    color: colors.muted,
-  },
-  bookmarkActive: {
-    color: colors.primaryCobalt,
-  },
-  headword: {
-    fontSize: typography.fontSize.display,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.ink,
-    marginBottom: spacing.xs,
-    lineHeight: 40,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  transliteration: {
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-    fontFamily: 'monospace',
-  },
-  posBadge: {
-    backgroundColor: colors.paperDeep,
-    paddingHorizontal: spacing.xs + 2,
-    paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-  },
-  posText: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    textTransform: 'uppercase',
-    fontWeight: typography.fontWeight.bold,
-  },
-  meaning: {
-    fontSize: typography.fontSize.bodyLarge,
-    color: colors.ink,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.sm,
-  },
-  tapHint: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.medium,
-  },
-});
+function createStyles(colors: ThemeColors, devanagariScale: number) {
+  const scaledHeadwordSize = scaleDevanagari(typography.fontSize.display, devanagariScale);
+
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.elevatedSurface,
+      borderRadius: borderRadius.lg,
+      padding: spacing.lg,
+      marginBottom: spacing.lg,
+      borderWidth: 1,
+      borderColor: colors.line,
+      shadowColor: '#28281c',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.07,
+      shadowRadius: 8,
+      elevation: 2,
+    },
+    cardPressed: {
+      backgroundColor: colors.paper,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.sm,
+    },
+    kicker: {
+      fontSize: typography.fontSize.badge,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    bookmarkIcon: {
+      fontSize: 20,
+      color: colors.muted,
+    },
+    bookmarkActive: {
+      color: colors.primaryCobalt,
+    },
+    headword: {
+      fontSize: scaledHeadwordSize,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryText,
+      marginBottom: spacing.xs,
+      lineHeight: Math.round(scaledHeadwordSize * 1.25),
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      marginBottom: spacing.sm,
+    },
+    transliteration: {
+      fontSize: typography.fontSize.body,
+      color: colors.muted,
+      fontFamily: 'monospace',
+    },
+    posBadge: {
+      backgroundColor: colors.paperDeep,
+      paddingHorizontal: spacing.xs + 2,
+      paddingVertical: 2,
+      borderRadius: borderRadius.xs,
+    },
+    posText: {
+      fontSize: typography.fontSize.badge,
+      color: colors.muted,
+      textTransform: 'uppercase',
+      fontWeight: typography.fontWeight.bold,
+    },
+    meaning: {
+      fontSize: typography.fontSize.bodyLarge,
+      color: colors.primaryText,
+      fontWeight: typography.fontWeight.medium,
+      marginBottom: spacing.sm,
+    },
+    tapHint: {
+      fontSize: typography.fontSize.caption,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.medium,
+    },
+  });
+}

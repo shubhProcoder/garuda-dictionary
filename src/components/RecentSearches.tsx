@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
 
 export interface RecentSearchesProps {
   recents: string[];
@@ -13,6 +14,9 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   onSelectQuery,
   onClear,
 }) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   if (recents.length === 0) {
     return null;
   }
@@ -48,41 +52,43 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  label: {
-    fontSize: typography.fontSize.badge - 1,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  clearText: {
-    fontSize: typography.fontSize.badge,
-    color: colors.blue,
-  },
-  scrollContent: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    paddingVertical: 2,
-  },
-  chip: {
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.xs,
-  },
-  chipText: {
-    fontSize: typography.fontSize.caption,
-    color: '#64665e',
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      marginVertical: spacing.sm,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.xs,
+    },
+    label: {
+      fontSize: typography.fontSize.badge - 1,
+      color: colors.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    clearText: {
+      fontSize: typography.fontSize.badge,
+      color: colors.primaryCobalt,
+    },
+    scrollContent: {
+      flexDirection: 'row',
+      gap: spacing.xs,
+      paddingVertical: 2,
+    },
+    chip: {
+      paddingHorizontal: spacing.sm + 2,
+      paddingVertical: spacing.xs,
+      borderWidth: 1,
+      borderColor: colors.line,
+      backgroundColor: colors.elevatedSurface,
+      borderRadius: borderRadius.xs,
+    },
+    chipText: {
+      fontSize: typography.fontSize.caption,
+      color: colors.primaryText,
+    },
+  });
+}

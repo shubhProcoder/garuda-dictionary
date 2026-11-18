@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -8,7 +8,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { useReadingSize, useTheme } from '../context/ThemeContext';
+import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
 import { DictionaryEntry, MatchType, MatchedField } from '../types/dictionary';
 
 export interface MatchContext {
@@ -82,6 +83,10 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
   onBack,
   matchContext,
 }) => {
+  const { colors } = useTheme();
+  const { devanagariScale } = useReadingSize();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const uniqueSpellings = Array.from(new Set(entry.romanised));
   const entryIdFormatted = String(entry.id).padStart(3, '0');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -219,7 +224,14 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
 
         {/* Word Hero */}
         <View style={styles.heroSection}>
-          <Text style={styles.headword}>{entry.headword}</Text>
+          <Text
+            style={[
+              styles.headword,
+              { fontSize: Math.round(typography.fontSize.headwordLarge * devanagariScale) },
+            ]}
+          >
+            {entry.headword}
+          </Text>
           <Text style={styles.transliteration}>{entry.transliteration}</Text>
 
           <View style={styles.posContainer}>
@@ -320,295 +332,296 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-    backgroundColor: colors.canvasPaper,
-  },
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.xl,
-    paddingBottom: spacing.huge,
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  backButton: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.xs,
-  },
-  backButtonText: {
-    color: colors.primaryCobalt,
-    fontSize: typography.fontSize.caption,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  topline: {
-    marginBottom: spacing.lg,
-  },
-  toplineLabel: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.medium,
-    letterSpacing: 1,
-  },
-  toplineId: {
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-  },
-  bookmarkButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: spacing.xs + 2,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.elevatedSurface,
-  },
-  bookmarkButtonActive: {
-    borderColor: colors.primaryCobalt,
-    backgroundColor: 'rgba(43, 74, 232, 0.08)',
-  },
-  bookmarkIcon: {
-    fontSize: 16,
-    color: colors.muted,
-  },
-  bookmarkIconActive: {
-    color: colors.primaryCobalt,
-  },
-  bookmarkText: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryText,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 0.5,
-  },
-  bookmarkTextActive: {
-    color: colors.primaryCobalt,
-  },
+function createStyles(theme: ThemeColors) {
+  return StyleSheet.create({
+    outerContainer: {
+      flex: 1,
+      backgroundColor: theme.canvasPaper,
+    },
+    container: {
+      flex: 1,
+    },
+    contentContainer: {
+      padding: spacing.xl,
+      paddingBottom: spacing.huge,
+    },
+    navBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.md,
+    },
+    backButton: {
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.xs,
+    },
+    backButtonText: {
+      color: theme.primaryCobalt,
+      fontSize: typography.fontSize.caption,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    topline: {
+      marginBottom: spacing.lg,
+    },
+    toplineLabel: {
+      fontSize: typography.fontSize.badge,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.medium,
+      letterSpacing: 1,
+    },
+    toplineId: {
+      color: theme.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+    },
+    bookmarkButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      paddingHorizontal: spacing.sm + 2,
+      paddingVertical: spacing.xs + 2,
+      borderWidth: 1,
+      borderColor: theme.line,
+      borderRadius: borderRadius.sm,
+      backgroundColor: theme.elevatedSurface,
+    },
+    bookmarkButtonActive: {
+      borderColor: theme.primaryCobalt,
+      backgroundColor: 'rgba(43, 74, 232, 0.12)',
+    },
+    bookmarkIcon: {
+      fontSize: 16,
+      color: theme.muted,
+    },
+    bookmarkIconActive: {
+      color: theme.primaryCobalt,
+    },
+    bookmarkText: {
+      fontSize: typography.fontSize.badge,
+      color: theme.primaryText,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 0.5,
+    },
+    bookmarkTextActive: {
+      color: theme.primaryCobalt,
+    },
 
-  /* Match Explanation Card */
-  matchCard: {
-    backgroundColor: 'rgba(43, 74, 232, 0.06)',
-    borderColor: 'rgba(43, 74, 232, 0.25)',
-    borderWidth: 1,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    gap: spacing.xs,
-  },
-  matchHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  matchKicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  matchBadge: {
-    backgroundColor: colors.primaryCobalt,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.pill,
-  },
-  matchBadgeText: {
-    fontSize: typography.fontSize.badge - 1,
-    color: colors.elevatedSurface,
-    fontWeight: typography.fontWeight.bold,
-    textTransform: 'uppercase',
-  },
-  matchQueryText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryText,
-  },
-  matchQueryHighlight: {
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryCobalt,
-  },
-  matchExplanationText: {
-    fontSize: typography.fontSize.body,
-    color: colors.primaryText,
-    lineHeight: 20,
-    fontStyle: 'italic',
-  },
+    /* Match Explanation Card */
+    matchCard: {
+      backgroundColor: 'rgba(43, 74, 232, 0.08)',
+      borderColor: 'rgba(43, 74, 232, 0.25)',
+      borderWidth: 1,
+      borderRadius: borderRadius.md,
+      padding: spacing.md,
+      marginBottom: spacing.lg,
+      gap: spacing.xs,
+    },
+    matchHeaderRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    matchKicker: {
+      fontSize: typography.fontSize.badge,
+      color: theme.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    matchBadge: {
+      backgroundColor: theme.primaryCobalt,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+      borderRadius: borderRadius.pill,
+    },
+    matchBadgeText: {
+      fontSize: typography.fontSize.badge - 1,
+      color: '#FFFFFF',
+      fontWeight: typography.fontWeight.bold,
+      textTransform: 'uppercase',
+    },
+    matchQueryText: {
+      fontSize: typography.fontSize.caption,
+      color: theme.primaryText,
+    },
+    matchQueryHighlight: {
+      fontWeight: typography.fontWeight.bold,
+      color: theme.primaryCobalt,
+    },
+    matchExplanationText: {
+      fontSize: typography.fontSize.body,
+      color: theme.primaryText,
+      lineHeight: 20,
+      fontStyle: 'italic',
+    },
 
-  /* Word Hero */
-  heroSection: {
-    marginBottom: spacing.md,
-  },
-  headword: {
-    fontSize: typography.fontSize.headwordLarge,
-    color: colors.primaryText,
-    fontWeight: typography.fontWeight.bold,
-    lineHeight: 64,
-  },
-  transliteration: {
-    fontSize: typography.fontSize.heading,
-    color: colors.phoneticViolet,
-    fontFamily: 'monospace',
-    marginTop: spacing.xs,
-  },
-  posContainer: {
-    marginTop: spacing.sm,
-    alignSelf: 'flex-start',
-  },
-  posBadge: {
-    backgroundColor: colors.paperDeep,
-    color: colors.primaryText,
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.xs,
-    fontSize: typography.fontSize.caption,
-    fontWeight: typography.fontWeight.bold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
+    /* Word Hero */
+    heroSection: {
+      marginBottom: spacing.md,
+    },
+    headword: {
+      color: theme.primaryText,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: 64,
+    },
+    transliteration: {
+      fontSize: typography.fontSize.heading,
+      color: theme.phoneticViolet,
+      fontFamily: 'monospace',
+      marginTop: spacing.xs,
+    },
+    posContainer: {
+      marginTop: spacing.sm,
+      alignSelf: 'flex-start',
+    },
+    posBadge: {
+      backgroundColor: theme.paperDeep,
+      color: theme.primaryText,
+      paddingHorizontal: spacing.sm + 2,
+      paddingVertical: spacing.xs,
+      borderRadius: borderRadius.xs,
+      fontSize: typography.fontSize.caption,
+      fontWeight: typography.fontWeight.bold,
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+    },
 
-  /* Action Buttons */
-  actionRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.elevatedSurface,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: borderRadius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  actionButtonText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryText,
-    fontWeight: typography.fontWeight.medium,
-  },
+    /* Action Buttons */
+    actionRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+      marginTop: spacing.lg,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.elevatedSurface,
+      borderColor: theme.line,
+      borderWidth: 1,
+      borderRadius: borderRadius.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    actionButtonText: {
+      fontSize: typography.fontSize.caption,
+      color: theme.primaryText,
+      fontWeight: typography.fontWeight.medium,
+    },
 
-  divider: {
-    height: 1,
-    backgroundColor: colors.line,
-    marginVertical: spacing.lg,
-  },
+    divider: {
+      height: 1,
+      backgroundColor: theme.line,
+      marginVertical: spacing.lg,
+    },
 
-  /* Meanings */
-  section: {
-    marginTop: spacing.sm,
-  },
-  sectionLabel: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-    marginBottom: spacing.sm,
-  },
-  meaningsList: {
-    gap: spacing.sm,
-  },
-  meaningRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    backgroundColor: colors.elevatedSurface,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: borderRadius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-  },
-  meaningNumber: {
-    fontSize: typography.fontSize.bodyLarge,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryCobalt,
-    width: 20,
-  },
-  meaningText: {
-    flex: 1,
-    fontSize: typography.fontSize.bodyLarge,
-    color: colors.primaryText,
-    lineHeight: 22,
-  },
+    /* Meanings */
+    section: {
+      marginTop: spacing.sm,
+    },
+    sectionLabel: {
+      fontSize: typography.fontSize.badge,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1.2,
+      marginBottom: spacing.sm,
+    },
+    meaningsList: {
+      gap: spacing.sm,
+    },
+    meaningRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+      backgroundColor: theme.elevatedSurface,
+      borderColor: theme.line,
+      borderWidth: 1,
+      borderRadius: borderRadius.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm + 2,
+    },
+    meaningNumber: {
+      fontSize: typography.fontSize.bodyLarge,
+      fontWeight: typography.fontWeight.bold,
+      color: theme.primaryCobalt,
+      width: 20,
+    },
+    meaningText: {
+      flex: 1,
+      fontSize: typography.fontSize.bodyLarge,
+      color: theme.primaryText,
+      lineHeight: 22,
+    },
 
-  /* Example */
-  exampleCard: {
-    backgroundColor: colors.elevatedSurface,
-    borderLeftWidth: 4,
-    borderLeftColor: colors.limeHighlight,
-    borderRadius: borderRadius.sm,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.line,
-  },
-  exampleText: {
-    fontSize: typography.fontSize.subheading,
-    lineHeight: 28,
-    color: colors.primaryText,
-  },
-  exampleCaption: {
-    fontSize: typography.fontSize.badge - 1,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-    marginTop: spacing.sm,
-  },
+    /* Example */
+    exampleCard: {
+      backgroundColor: theme.elevatedSurface,
+      borderLeftWidth: 4,
+      borderLeftColor: theme.limeHighlight,
+      borderRadius: borderRadius.sm,
+      padding: spacing.lg,
+      borderWidth: 1,
+      borderColor: theme.line,
+    },
+    exampleText: {
+      fontSize: typography.fontSize.subheading,
+      lineHeight: 28,
+      color: theme.primaryText,
+    },
+    exampleCaption: {
+      fontSize: typography.fontSize.badge - 1,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+      marginTop: spacing.sm,
+    },
 
-  /* Spellings */
-  spellingList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  spellingChip: {
-    backgroundColor: colors.elevatedSurface,
-    borderColor: colors.line,
-    borderWidth: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: borderRadius.pill,
-  },
-  spellingText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryText,
-    fontFamily: 'monospace',
-  },
+    /* Spellings */
+    spellingList: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    spellingChip: {
+      backgroundColor: theme.elevatedSurface,
+      borderColor: theme.line,
+      borderWidth: 1,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs + 2,
+      borderRadius: borderRadius.pill,
+    },
+    spellingText: {
+      fontSize: typography.fontSize.caption,
+      color: theme.primaryText,
+      fontFamily: 'monospace',
+    },
 
-  footerNote: {
-    marginTop: spacing.xxxl,
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    lineHeight: 18,
-    textAlign: 'center',
-  },
+    footerNote: {
+      marginTop: spacing.xxxl,
+      fontSize: typography.fontSize.caption,
+      color: theme.muted,
+      lineHeight: 18,
+      textAlign: 'center',
+    },
 
-  /* Toast */
-  toastContainer: {
-    position: 'absolute',
-    bottom: spacing.xxl,
-    alignSelf: 'center',
-    backgroundColor: colors.primaryText,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.pill,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  toastText: {
-    color: colors.elevatedSurface,
-    fontSize: typography.fontSize.caption,
-    fontWeight: typography.fontWeight.semibold,
-  },
-});
+    /* Toast */
+    toastContainer: {
+      position: 'absolute',
+      bottom: spacing.xxl,
+      alignSelf: 'center',
+      backgroundColor: theme.primaryText,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.sm + 2,
+      borderRadius: borderRadius.pill,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    toastText: {
+      color: theme.elevatedSurface,
+      fontSize: typography.fontSize.caption,
+      fontWeight: typography.fontWeight.semibold,
+    },
+  });
+}

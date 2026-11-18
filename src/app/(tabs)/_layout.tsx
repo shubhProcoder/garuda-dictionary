@@ -3,11 +3,13 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabIcon } from '../../components/TabIcon';
-import { colors, typography } from '../../theme/tokens';
+import { useTheme } from '../../context/ThemeContext';
+import { typography } from '../../theme/tokens';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, 0);
+  const { colors } = useTheme();
 
   return (
     <Tabs

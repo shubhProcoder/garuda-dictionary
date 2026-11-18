@@ -1,15 +1,34 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useReadingSize, useTheme } from '../context/ThemeContext';
 import { useDictionary } from '../hooks/useDictionary';
-import { borderRadius, colors, spacing, typography } from '../theme/tokens';
+import { DevanagariReadingSize, ThemePreference } from '../storage/settings';
+import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
+
+const THEME_OPTIONS: Array<{ label: string; value: ThemePreference; description: string }> = [
+  { label: 'Light', value: 'light', description: 'Garuda warm paper identity' },
+  { label: 'Dark', value: 'dark', description: 'Comfortable low-light reading' },
+  { label: 'System', value: 'system', description: 'Follow device appearance' },
+];
+
+const READING_SIZE_OPTIONS: Array<{ label: string; value: DevanagariReadingSize; scaleLabel: string }> = [
+  { label: 'Small', value: 'small', scaleLabel: '90%' },
+  { label: 'Medium', value: 'medium', scaleLabel: '100%' },
+  { label: 'Large', value: 'large', scaleLabel: '115%' },
+];
 
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { entries } = useDictionary();
   const entryCount = entries.length > 0 ? entries.length : 70;
+
+  const { colors, themePreference, setThemePreference } = useTheme();
+  const { readingSize, devanagariScale, setReadingSize } = useReadingSize();
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   return (
     <ScrollView
@@ -39,7 +58,86 @@ export default function SettingsScreen() {
         </Text>
       </View>
 
-      {/* Dictionary Dataset Card */}
+      {/* 1. Appearance Section */}
+      <View style={styles.card}>
+        <Text style={styles.cardHeader}>APPEARANCE</Text>
+        <Text style={styles.sectionSubtitle}>Choose how Garuda looks on your device.</Text>
+
+        <View style={styles.optionsRow}>
+          {THEME_OPTIONS.map((opt) => {
+            const isSelected = themePreference === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                style={[styles.optionChip, isSelected && styles.optionChipSelected]}
+                onPress={() => setThemePreference(opt.value)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={`${opt.label} theme: ${opt.description}`}
+              >
+                <View style={styles.optionHeader}>
+                  <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
+                    {opt.label}
+                  </Text>
+                  {isSelected && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={[styles.optionDescription, isSelected && styles.optionDescriptionSelected]}>
+                  {opt.description}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* 2. Devanagari Reading Size Section */}
+      <View style={styles.card}>
+        <Text style={styles.cardHeader}>DEVANAGARI READING SIZE</Text>
+        <Text style={styles.sectionSubtitle}>Adjust the size of Hindi words throughout the app.</Text>
+
+        <View style={styles.segmentedRow}>
+          {READING_SIZE_OPTIONS.map((opt) => {
+            const isSelected = readingSize === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                style={[styles.segmentButton, isSelected && styles.segmentButtonSelected]}
+                onPress={() => setReadingSize(opt.value)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={`${opt.label} Devanagari reading size (${opt.scaleLabel})`}
+              >
+                <Text style={[styles.segmentLabel, isSelected && styles.segmentLabelSelected]}>
+                  {opt.label}
+                </Text>
+                <Text style={[styles.segmentScale, isSelected && styles.segmentScaleSelected]}>
+                  {opt.scaleLabel}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Live Devanagari Preview */}
+        <View style={styles.previewContainer}>
+          <Text style={styles.previewHeader}>LIVE DEVANAGARI PREVIEW</Text>
+          <View style={styles.previewBox}>
+            <Text
+              style={[
+                styles.previewText,
+                { fontSize: Math.round(typography.fontSize.display * devanagariScale) },
+              ]}
+            >
+              धर्म · ज्ञान · प्रकाश
+            </Text>
+          </View>
+          <Text style={styles.previewCaption}>
+            Sample headword rendering at {readingSize} scale ({Math.round(devanagariScale * 100)}%)
+          </Text>
+        </View>
+      </View>
+
+      {/* 3. Dictionary Dataset Card */}
       <View style={styles.card}>
         <Text style={styles.cardHeader}>DICTIONARY DATASET</Text>
 
@@ -62,29 +160,19 @@ export default function SettingsScreen() {
         <View style={styles.separator} />
 
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>Data Storage</Text>
-          <Text style={styles.rowValue}>Bundled Local JSON</Text>
-        </View>
-      </View>
-
-      {/* Appearance Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardHeader}>APPEARANCE</Text>
-
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Theme</Text>
-          <Text style={styles.rowValue}>Light (System Default)</Text>
+          <Text style={styles.rowLabel}>Supported Inputs</Text>
+          <Text style={styles.rowValue}>Devanagari, Roman, English</Text>
         </View>
 
         <View style={styles.separator} />
 
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>Typography</Text>
-          <Text style={styles.rowValue}>Devanagari Standard</Text>
+          <Text style={styles.rowLabel}>Data Storage</Text>
+          <Text style={styles.rowValue}>Bundled Local JSON</Text>
         </View>
       </View>
 
-      {/* About Card */}
+      {/* 4. About Card */}
       <View style={styles.card}>
         <Text style={styles.cardHeader}>ABOUT</Text>
 
@@ -115,109 +203,225 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvasPaper,
-  },
-  contentContainer: {
-    padding: spacing.xl,
-  },
-  backButton: {
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.md,
-    alignSelf: 'flex-start',
-  },
-  backButtonText: {
-    color: colors.primaryCobalt,
-    fontSize: typography.fontSize.caption,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  titleSection: {
-    marginBottom: spacing.xxl,
-  },
-  kicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-    marginBottom: spacing.xs,
-  },
-  heading: {
-    fontSize: typography.fontSize.display - 4,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-    marginBottom: spacing.xs,
-  },
-  description: {
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-    lineHeight: 20,
-  },
-  card: {
-    backgroundColor: colors.elevatedSurface,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: borderRadius.md,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    shadowColor: '#28281c',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 1,
-  },
-  cardHeader: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-    marginBottom: spacing.md,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.xs,
-  },
-  rowLabel: {
-    fontSize: typography.fontSize.body,
-    color: colors.primaryText,
-    fontWeight: typography.fontWeight.medium,
-  },
-  rowValue: {
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-  },
-  badge: {
-    backgroundColor: colors.paperDeep,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: borderRadius.xs,
-  },
-  badgeText: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-  },
-  badgeSuccess: {
-    backgroundColor: 'rgba(5, 150, 105, 0.1)',
-  },
-  badgeTextSuccess: {
-    color: colors.semanticEmerald,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.line,
-    marginVertical: spacing.sm,
-  },
-  aboutCopySection: {
-    paddingTop: spacing.xs,
-  },
-  aboutCopy: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    lineHeight: 18,
-  },
-});
+function createStyles(theme: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.canvasPaper,
+    },
+    contentContainer: {
+      padding: spacing.xl,
+    },
+    backButton: {
+      paddingVertical: spacing.sm,
+      marginBottom: spacing.md,
+      alignSelf: 'flex-start',
+    },
+    backButtonText: {
+      color: theme.primaryCobalt,
+      fontSize: typography.fontSize.caption,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    titleSection: {
+      marginBottom: spacing.xxl,
+    },
+    kicker: {
+      fontSize: typography.fontSize.badge,
+      color: theme.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1.2,
+      marginBottom: spacing.xs,
+    },
+    heading: {
+      fontSize: typography.fontSize.display - 4,
+      fontWeight: typography.fontWeight.bold,
+      color: theme.primaryText,
+      marginBottom: spacing.xs,
+    },
+    description: {
+      fontSize: typography.fontSize.body,
+      color: theme.muted,
+      lineHeight: 20,
+    },
+    card: {
+      backgroundColor: theme.elevatedSurface,
+      borderColor: theme.line,
+      borderWidth: 1,
+      borderRadius: borderRadius.md,
+      padding: spacing.lg,
+      marginBottom: spacing.xl,
+    },
+    cardHeader: {
+      fontSize: typography.fontSize.badge,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1.2,
+      marginBottom: spacing.xs,
+    },
+    sectionSubtitle: {
+      fontSize: typography.fontSize.caption,
+      color: theme.muted,
+      marginBottom: spacing.md,
+      lineHeight: 16,
+    },
+    optionsRow: {
+      gap: spacing.sm,
+    },
+    optionChip: {
+      padding: spacing.md,
+      borderWidth: 1,
+      borderColor: theme.line,
+      borderRadius: borderRadius.sm,
+      backgroundColor: theme.paperDeep,
+    },
+    optionChipSelected: {
+      borderColor: theme.primaryCobalt,
+      backgroundColor: theme.elevatedSurface,
+    },
+    optionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 2,
+    },
+    optionLabel: {
+      fontSize: typography.fontSize.bodyLarge,
+      fontWeight: typography.fontWeight.semibold,
+      color: theme.primaryText,
+    },
+    optionLabelSelected: {
+      color: theme.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+    },
+    checkmark: {
+      color: theme.primaryCobalt,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    optionDescription: {
+      fontSize: typography.fontSize.caption,
+      color: theme.muted,
+    },
+    optionDescriptionSelected: {
+      color: theme.primaryText,
+    },
+    segmentedRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginBottom: spacing.lg,
+    },
+    segmentButton: {
+      flex: 1,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.sm,
+      borderWidth: 1,
+      borderColor: theme.line,
+      borderRadius: borderRadius.sm,
+      backgroundColor: theme.paperDeep,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    segmentButtonSelected: {
+      borderColor: theme.primaryCobalt,
+      backgroundColor: theme.elevatedSurface,
+    },
+    segmentLabel: {
+      fontSize: typography.fontSize.body,
+      fontWeight: typography.fontWeight.semibold,
+      color: theme.primaryText,
+    },
+    segmentLabelSelected: {
+      color: theme.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+    },
+    segmentScale: {
+      fontSize: typography.fontSize.badge,
+      color: theme.muted,
+      marginTop: 2,
+    },
+    segmentScaleSelected: {
+      color: theme.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+    },
+    previewContainer: {
+      paddingTop: spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: theme.line,
+    },
+    previewHeader: {
+      fontSize: typography.fontSize.badge - 1,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+      marginBottom: spacing.xs,
+    },
+    previewBox: {
+      backgroundColor: theme.paperDeep,
+      borderRadius: borderRadius.sm,
+      paddingVertical: spacing.lg,
+      paddingHorizontal: spacing.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 80,
+    },
+    previewText: {
+      fontWeight: typography.fontWeight.semibold,
+      color: theme.primaryText,
+      textAlign: 'center',
+    },
+    previewCaption: {
+      fontSize: typography.fontSize.caption - 1,
+      color: theme.muted,
+      textAlign: 'center',
+      marginTop: spacing.xs,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: spacing.sm,
+    },
+    rowLabel: {
+      fontSize: typography.fontSize.body,
+      color: theme.primaryText,
+      fontWeight: typography.fontWeight.medium,
+    },
+    rowValue: {
+      fontSize: typography.fontSize.body,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.semibold,
+    },
+    badge: {
+      backgroundColor: theme.paperDeep,
+      paddingHorizontal: spacing.sm + 2,
+      paddingVertical: spacing.xs - 1,
+      borderRadius: borderRadius.xs,
+    },
+    badgeText: {
+      fontSize: typography.fontSize.badge,
+      color: theme.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 0.5,
+    },
+    badgeSuccess: {
+      backgroundColor: 'rgba(5, 150, 105, 0.1)',
+    },
+    badgeTextSuccess: {
+      color: theme.semanticEmerald,
+    },
+    separator: {
+      height: 1,
+      backgroundColor: theme.line,
+      marginVertical: spacing.xs,
+    },
+    aboutCopySection: {
+      marginTop: spacing.sm,
+    },
+    aboutCopy: {
+      fontSize: typography.fontSize.caption,
+      color: theme.muted,
+      lineHeight: 18,
+    },
+  });
+}

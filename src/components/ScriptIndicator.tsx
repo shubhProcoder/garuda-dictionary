@@ -4,14 +4,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { isDevanagari } from '../engine/normalize';
-import { colors, spacing, typography, borderRadius } from '../theme/tokens';
+import { useTheme } from '../context/ThemeContext';
+import { spacing, typography, borderRadius } from '../theme/tokens';
 
-interface ScriptIndicatorProps {
+export interface ScriptIndicatorProps {
   /** Current search query */
   query: string;
 }
 
 export const ScriptIndicator: React.FC<ScriptIndicatorProps> = ({ query }) => {
+  const { colors } = useTheme();
   if (!query) return null;
 
   const isDev = isDevanagari(query);
@@ -20,7 +22,7 @@ export const ScriptIndicator: React.FC<ScriptIndicatorProps> = ({ query }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
-      <Text style={styles.text}>{label}</Text>
+      <Text style={[styles.text, { color: colors.white }]}>{label}</Text>
     </View>
   );
 };
@@ -34,7 +36,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   text: {
-    color: colors.elevatedSurface,
     fontSize: typography.fontSize.badge,
     fontWeight: '600',
     textTransform: 'uppercase',

@@ -1,5 +1,5 @@
-export const colors = {
-  // Approved Phase 1 Design Tokens
+export const lightThemeColors = {
+  // Approved Phase 1 Light Design Tokens
   canvasPaper: '#FAF7F2',
   elevatedSurface: '#FFFFFF',
   primaryCobalt: '#2B4AE8',
@@ -25,6 +25,56 @@ export const colors = {
   warning: '#D97706',
   error: '#DC2626',
 };
+
+export const darkThemeColors = {
+  // Deliberate Phase 6 Dark Design Tokens
+  canvasPaper: '#121316',
+  elevatedSurface: '#1C1D22',
+  primaryCobalt: '#5B7BFA',
+  phoneticViolet: '#A78BFA',
+  semanticEmerald: '#10B981',
+  warningAmber: '#F59E0B',
+  primaryText: '#F3F4F6',
+  limeHighlight: '#C8F36B',
+
+  // Consistent tokens matching the light theme shape
+  paper: '#121316',
+  paperDeep: '#16171B',
+  white: '#1C1D22',
+  surface: '#1C1D22',
+  ink: '#F3F4F6',
+  muted: '#9CA3AF',
+  line: '#2B2C33',
+  blue: '#5B7BFA',
+  blueDark: '#7892FF',
+  lime: '#C8F36B',
+  lavender: '#272338',
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+};
+
+export type ThemeColors = typeof lightThemeColors;
+
+// Default alias for backward compatibility with static imports
+export const colors: ThemeColors = lightThemeColors;
+
+// Devanagari Reading Size Scales
+export type DevanagariScaleValue = 'small' | 'medium' | 'large';
+
+export const DEVANAGARI_SCALES: Record<DevanagariScaleValue, number> = {
+  small: 0.9,
+  medium: 1.0,
+  large: 1.15,
+};
+
+/**
+ * Calculates a scaled font size for Devanagari headwords, preserving whole-pixel values.
+ */
+export function scaleDevanagari(baseFontSize: number, size: DevanagariScaleValue | number): number {
+  const factor = typeof size === 'number' ? size : (DEVANAGARI_SCALES[size] ?? 1.0);
+  return Math.round(baseFontSize * factor);
+}
 
 export const spacing = {
   xs: 4,

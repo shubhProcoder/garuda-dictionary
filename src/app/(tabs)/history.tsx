@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -15,10 +15,13 @@ import { EmptyState } from '../../components/EmptyState';
 import { searchEntries } from '../../engine/search';
 import { useDictionary } from '../../hooks/useDictionary';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
-import { borderRadius, colors, spacing, typography } from '../../theme/tokens';
+import { useTheme } from '../../context/ThemeContext';
+import { ThemeColors, borderRadius, spacing, typography } from '../../theme/tokens';
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
+  const styles = useMemo(() => createStyles(colors, isDark), [colors, isDark]);
   const { entries, index } = useDictionary();
   const { recents, clearRecents, isLoading } = useRecentSearches();
 
@@ -168,135 +171,137 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.canvasPaper,
-  },
-  listContent: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.huge,
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.canvasPaper,
-    padding: spacing.xl,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-  },
-  headerContainer: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  titleWithBadge: {
-    flex: 1,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  kicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-  },
-  title: {
-    fontSize: typography.fontSize.heading + 2,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-    marginTop: 2,
-  },
-  countBadge: {
-    backgroundColor: colors.paperDeep,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.pill,
-  },
-  countText: {
-    fontSize: typography.fontSize.caption - 1,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-  },
-  clearButton: {
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.xs,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.elevatedSurface,
-  },
-  clearButtonText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.error,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  description: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    marginTop: spacing.xs,
-    lineHeight: 16,
-  },
-  historyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
-    gap: spacing.md,
-  },
-  historyRowPressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-  },
-  searchIconBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.paperDeep,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchIconGlyph: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.primaryCobalt,
-  },
-  queryContainer: {
-    flex: 1,
-  },
-  queryText: {
-    fontSize: typography.fontSize.bodyLarge,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.primaryText,
-  },
-  previewText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.semanticEmerald,
-    marginTop: 2,
-  },
-  querySubtext: {
-    fontSize: typography.fontSize.caption - 1,
-    color: colors.muted,
-    marginTop: 2,
-  },
-  arrowContainer: {
-    paddingRight: spacing.xs,
-  },
-  arrowIcon: {
-    fontSize: 16,
-    color: colors.primaryCobalt,
-    fontWeight: 'bold',
-  },
-});
+function createStyles(colors: ThemeColors, isDark: boolean) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvasPaper,
+    },
+    listContent: {
+      paddingHorizontal: spacing.lg,
+      paddingBottom: spacing.huge,
+    },
+    centerContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.canvasPaper,
+      padding: spacing.xl,
+    },
+    loadingText: {
+      marginTop: spacing.md,
+      fontSize: typography.fontSize.body,
+      color: colors.muted,
+    },
+    headerContainer: {
+      paddingTop: spacing.md,
+      paddingBottom: spacing.sm,
+    },
+    titleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    titleWithBadge: {
+      flex: 1,
+    },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    kicker: {
+      fontSize: typography.fontSize.badge,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1.2,
+    },
+    title: {
+      fontSize: typography.fontSize.heading + 2,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryText,
+      marginTop: 2,
+    },
+    countBadge: {
+      backgroundColor: colors.paperDeep,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.xs,
+      borderRadius: borderRadius.pill,
+    },
+    countText: {
+      fontSize: typography.fontSize.caption - 1,
+      color: colors.muted,
+      fontWeight: typography.fontWeight.bold,
+    },
+    clearButton: {
+      paddingHorizontal: spacing.sm + 2,
+      paddingVertical: spacing.xs,
+      borderRadius: borderRadius.xs,
+      borderWidth: 1,
+      borderColor: colors.line,
+      backgroundColor: colors.elevatedSurface,
+    },
+    clearButtonText: {
+      fontSize: typography.fontSize.caption,
+      color: colors.error,
+      fontWeight: typography.fontWeight.semibold,
+    },
+    description: {
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      marginTop: spacing.xs,
+      lineHeight: 16,
+    },
+    historyRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.line,
+      gap: spacing.md,
+    },
+    historyRowPressed: {
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
+    },
+    searchIconBadge: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: colors.paperDeep,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    searchIconGlyph: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.primaryCobalt,
+    },
+    queryContainer: {
+      flex: 1,
+    },
+    queryText: {
+      fontSize: typography.fontSize.bodyLarge,
+      fontWeight: typography.fontWeight.semibold,
+      color: colors.primaryText,
+    },
+    previewText: {
+      fontSize: typography.fontSize.caption,
+      color: colors.semanticEmerald,
+      marginTop: 2,
+    },
+    querySubtext: {
+      fontSize: typography.fontSize.caption - 1,
+      color: colors.muted,
+      marginTop: 2,
+    },
+    arrowContainer: {
+      paddingRight: spacing.xs,
+    },
+    arrowIcon: {
+      fontSize: 16,
+      color: colors.primaryCobalt,
+      fontWeight: 'bold',
+    },
+  });
+}

@@ -2,14 +2,16 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
-import { colors } from '../theme/tokens';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
 
 // Prevent native splash screen from auto-hiding until initial layout is ready
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might cause some race conditions, ignore */
 });
 
-export default function RootLayout() {
+function RootNavigation() {
+  const { colors, isDark } = useTheme();
+
   useEffect(() => {
     // Hide native splash screen once the root layout is mounted and ready
     SplashScreen.hideAsync().catch((err) => {
@@ -19,7 +21,10 @@ export default function RootLayout() {
 
   return (
     <>
-      <StatusBar style="dark" backgroundColor={colors.canvasPaper} />
+      <StatusBar
+        style={isDark ? 'light' : 'dark'}
+        backgroundColor={colors.canvasPaper}
+      />
       <Stack
         screenOptions={{
           headerStyle: {
@@ -59,5 +64,13 @@ export default function RootLayout() {
         />
       </Stack>
     </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <RootNavigation />
+    </ThemeProvider>
   );
 }

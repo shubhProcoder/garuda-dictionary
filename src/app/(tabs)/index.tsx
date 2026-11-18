@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';import {
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
   ActivityIndicator,
   FlatList,
   SafeAreaView,
@@ -22,16 +23,19 @@ import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useSearch } from '../../hooks/useSearch';
+import { useTheme } from '../../context/ThemeContext';
 import {
   isOnboardingCompleted,
   setOnboardingCompleted,
 } from '../../storage/onboarding';
-import { colors, spacing, typography } from '../../theme/tokens';
+import { ThemeColors, spacing, typography } from '../../theme/tokens';
 import { DictionaryEntry, SearchResult } from '../../types/dictionary';
 
 export default function SearchScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ q?: string }>();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const { entries, index, isLoading: isDictLoading, error } = useDictionary();
   const { isBookmarked } = useBookmarks();
@@ -255,68 +259,70 @@ export default function SearchScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.canvasPaper,
-  },
-  listContent: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.huge,
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.canvasPaper,
-    padding: spacing.xl,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-  },
-  errorText: {
-    fontSize: typography.fontSize.heading,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.error,
-  },
-  errorSubtext: {
-    marginTop: spacing.xs,
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    textAlign: 'center',
-  },
-  headerContainer: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  searchSection: {
-    marginBottom: spacing.xs,
-  },
-  scriptRow: {
-    marginTop: spacing.xs,
-  },
-  sectionHeadingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
-    paddingTop: spacing.xs,
-  },
-  sectionKicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1,
-  },
-  sectionCount: {
-    fontSize: typography.fontSize.caption,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  idleDiscoveryContainer: {
-    marginTop: spacing.xs,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvasPaper,
+    },
+    listContent: {
+      paddingHorizontal: spacing.lg,
+      paddingBottom: spacing.huge,
+    },
+    centerContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.canvasPaper,
+      padding: spacing.xl,
+    },
+    loadingText: {
+      marginTop: spacing.md,
+      fontSize: typography.fontSize.body,
+      color: colors.muted,
+    },
+    errorText: {
+      fontSize: typography.fontSize.heading,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.error,
+    },
+    errorSubtext: {
+      marginTop: spacing.xs,
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      textAlign: 'center',
+    },
+    headerContainer: {
+      paddingTop: spacing.md,
+      paddingBottom: spacing.sm,
+    },
+    searchSection: {
+      marginBottom: spacing.xs,
+    },
+    scriptRow: {
+      marginTop: spacing.xs,
+    },
+    sectionHeadingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: spacing.md,
+      marginBottom: spacing.xs,
+      paddingTop: spacing.xs,
+    },
+    sectionKicker: {
+      fontSize: typography.fontSize.badge,
+      color: colors.muted,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1,
+    },
+    sectionCount: {
+      fontSize: typography.fontSize.caption,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.semibold,
+    },
+    idleDiscoveryContainer: {
+      marginTop: spacing.xs,
+    },
+  });
+}

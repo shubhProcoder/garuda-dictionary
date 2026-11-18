@@ -17,11 +17,14 @@ import { filterByPartOfSpeech, filterSearchResultsByPOS } from '../../engine/fil
 import { searchEntries } from '../../engine/search';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
-import { colors, spacing, typography } from '../../theme/tokens';
+import { useTheme } from '../../context/ThemeContext';
+import { ThemeColors, spacing, typography } from '../../theme/tokens';
 import { DictionaryEntry, POSFilterValue, SearchResult } from '../../types/dictionary';
 
 export default function LexiconScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { entries, index, isLoading, error } = useDictionary();
   const { isBookmarked } = useBookmarks();
   const [posFilter, setPosFilter] = useState<POSFilterValue>('all');
@@ -164,81 +167,83 @@ export default function LexiconScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.canvasPaper,
-  },
-  listContent: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.huge,
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.canvasPaper,
-    padding: spacing.xl,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: typography.fontSize.body,
-    color: colors.muted,
-  },
-  errorText: {
-    fontSize: typography.fontSize.heading,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.error,
-  },
-  errorSubtext: {
-    marginTop: spacing.xs,
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    textAlign: 'center',
-  },
-  headerContainer: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xs,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  kicker: {
-    fontSize: typography.fontSize.badge,
-    color: colors.primaryCobalt,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 1.2,
-  },
-  title: {
-    fontSize: typography.fontSize.heading + 2,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primaryText,
-    marginTop: 2,
-  },
-  countBadge: {
-    backgroundColor: colors.paperDeep,
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: spacing.xs,
-    borderRadius: 999,
-  },
-  countText: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    fontWeight: typography.fontWeight.bold,
-  },
-  description: {
-    fontSize: typography.fontSize.caption,
-    color: colors.muted,
-    marginTop: spacing.xs,
-    lineHeight: 16,
-  },
-  searchSection: {
-    marginTop: spacing.md,
-  },
-  filterSection: {
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.canvasPaper,
+    },
+    listContent: {
+      paddingHorizontal: spacing.lg,
+      paddingBottom: spacing.huge,
+    },
+    centerContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.canvasPaper,
+      padding: spacing.xl,
+    },
+    loadingText: {
+      marginTop: spacing.md,
+      fontSize: typography.fontSize.body,
+      color: colors.muted,
+    },
+    errorText: {
+      fontSize: typography.fontSize.heading,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.error,
+    },
+    errorSubtext: {
+      marginTop: spacing.xs,
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      textAlign: 'center',
+    },
+    headerContainer: {
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xs,
+    },
+    titleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    kicker: {
+      fontSize: typography.fontSize.badge,
+      color: colors.primaryCobalt,
+      fontWeight: typography.fontWeight.bold,
+      letterSpacing: 1.2,
+    },
+    title: {
+      fontSize: typography.fontSize.heading + 2,
+      fontWeight: typography.fontWeight.bold,
+      color: colors.primaryText,
+      marginTop: 2,
+    },
+    countBadge: {
+      backgroundColor: colors.paperDeep,
+      paddingHorizontal: spacing.sm + 2,
+      paddingVertical: spacing.xs,
+      borderRadius: 999,
+    },
+    countText: {
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      fontWeight: typography.fontWeight.bold,
+    },
+    description: {
+      fontSize: typography.fontSize.caption,
+      color: colors.muted,
+      marginTop: spacing.xs,
+      lineHeight: 16,
+    },
+    searchSection: {
+      marginTop: spacing.md,
+    },
+    filterSection: {
+      marginTop: spacing.md,
+      marginBottom: spacing.xs,
+    },
+  });
+}
