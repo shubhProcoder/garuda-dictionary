@@ -1,6 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
-import {
+import React, { useCallback, useEffect, useMemo, useState } from 'react';import {
   ActivityIndicator,
   FlatList,
   SafeAreaView,
@@ -11,9 +10,14 @@ import {
 import { AppHeader } from '../../components/AppHeader';
 import { EmptyState } from '../../components/EmptyState';
 import { EntryCard } from '../../components/EntryCard';
+import { ExploreDictionary } from '../../components/ExploreDictionary';
 import { FirstRunWelcome } from '../../components/FirstRunWelcome';
 import { RecentSearches } from '../../components/RecentSearches';
+import { ScriptIndicator } from '../../components/ScriptIndicator';
 import { SearchBar } from '../../components/SearchBar';
+import { SuggestedQueries } from '../../components/SuggestedQueries';
+import { WordOfTheDay } from '../../components/WordOfTheDay';
+import { getTodayIndex } from '../../components/WordOfTheDay';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
@@ -74,7 +78,13 @@ export default function SearchScreen() {
 
   const totalCount = entries.length > 0 ? entries.length : 70;
 
-  // Display results when searching, or initial prompt when idle
+  // Word of the Day entry (stable for the whole day)
+  const wotdEntry = useMemo(() => {
+    if (entries.length === 0) return null;
+    return entries[getTodayIndex(entries.length)] ?? null;
+  }, [entries]);
+
+  // Display results when searching, or all entries when idle
   const displayedItems = useMemo(() => {
     if (hasQuery) {
       return results;
@@ -91,19 +101,29 @@ export default function SearchScreen() {
     );
   }, [hasQuery, results, entries]);
 
-  const handleSelectEntry = (entry: DictionaryEntry) => {
-    if (query.trim()) {
-      addRecent(query.trim());
-    }
-    router.push({
-      pathname: '/entry/[id]',
-      params: { id: String(entry.id) },
-    });
-  };
+  const handleSelectEntry = useCallback(
+    (entry: DictionaryEntry) => {
+      if (query.trim()) {
+        addRecent(query.trim());
+      }
+      router.push({
+        pathname: '/entry/[id]',
+        params: { id: String(entry.id) },
+      });
+    },
+    [query, addRecent, router]
+  );
 
-  const handleSelectRecentQuery = (selectedQuery: string) => {
-    setQuery(selectedQuery);
-  };
+  const handleSelectRecentQuery = useCallback(
+    (selectedQuery: string) => {
+      setQuery(selectedQuery);
+    },
+    [setQuery]
+  );
+
+  const handleNavigateToLexicon = useCallback(() => {
+    router.push('/(tabs)/lexicon');
+  }, [router]);
 
   if (isDictLoading) {
     return (
@@ -134,23 +154,43 @@ export default function SearchScreen() {
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View style={styles.headerContainer}>
-            {/* Search Input Section */}
+            {/* Search Input + Script Indicator */}
             <View style={styles.searchSection}>
               <SearchBar
                 value={query}
                 onChangeText={setQuery}
                 onClear={clearQuery}
-                placeholder="Try dharma, dharm, peace, or धर्म"
+                placeholder="Search dharma, धर्म or duty..."
               />
+              {/* Script indicator appears below the input when typing */}
+              {hasQuery && (
+                <View style={styles.scriptRow}>
+                  <ScriptIndicator query={query} />
+                </View>
+              )}
             </View>
 
-            {/* Recent Searches (shown in idle state when query is empty) */}
+            {/* ── IDLE DISCOVERY STATE ── */}
             {!hasQuery && (
-              <RecentSearches
-                recents={recents}
-                onSelectQuery={handleSelectRecentQuery}
-                onClear={clearRecents}
-              />
+              <>
+                {/* Word of the Day */}
+                {wotdEntry && (
+                  <WordOfTheDay
+                    entries={entries}
+                    onPress={handleSelectEntry}
+                  />
+                )}
+
+                {/* Recent Searches */}
+                <RecentSearches
+                  recents={recents}
+                  onSelectQuery={handleSelectRecentQuery}
+                  onClear={clearRecents}
+                />
+
+                {/* Suggested Queries */}
+                <SuggestedQueries onSelect={setQuery} />
+              </>
             )}
 
             {/* Results Counter / Section Kicker */}
@@ -176,7 +216,21 @@ export default function SearchScreen() {
           <EmptyState
             type="no_matches"
             onClearSearch={hasQuery ? clearQuery : undefined}
+            query={query}
+            onSelectSuggestion={hasQuery ? setQuery : undefined}
           />
+        }
+        ListFooterComponent={
+          !hasQuery && entries.length > 0 ? (
+            <View style={styles.exploreSection}>
+              <ExploreDictionary
+                entries={entries}
+                onViewAll={handleNavigateToLexicon}
+                onSelectEntry={handleSelectEntry}
+                excludeId={wotdEntry?.id}
+              />
+            </View>
+          ) : null
         }
       />
 
@@ -229,6 +283,9 @@ const styles = StyleSheet.create({
   searchSection: {
     marginBottom: spacing.xs,
   },
+  scriptRow: {
+    marginTop: spacing.xs,
+  },
   sectionHeadingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -247,5 +304,8 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.caption,
     color: colors.primaryCobalt,
     fontWeight: typography.fontWeight.semibold,
+  },
+  exploreSection: {
+    paddingHorizontal: 0,
   },
 });

@@ -23,7 +23,7 @@ describe('SearchScreen (Tab 1)', () => {
   });
 
   it('renders search bar, header, and all entries initially for returning user', async () => {
-    const { getByText, getByPlaceholderText, queryByText } = render(<SearchScreen />);
+    const { getByText, getAllByText, getByPlaceholderText, queryByText } = render(<SearchScreen />);
 
     expect(getByPlaceholderText('Try dharma, dharm, peace, or धर्म')).toBeTruthy();
     expect(getByText('ALL VERIFIED WORDS')).toBeTruthy();
@@ -33,18 +33,20 @@ describe('SearchScreen (Tab 1)', () => {
     expect(queryByText('Welcome to Garuda')).toBeNull();
 
     await waitFor(() => {
-      expect(getByText('शिक्षा')).toBeTruthy();
+      expect(getAllByText('शिक्षा').length).toBeGreaterThan(0);
     });
   });
 
   it('navigates to word detail when an entry card is tapped', async () => {
-    const { getByText } = render(<SearchScreen />);
+    const { getAllByText } = render(<SearchScreen />);
 
     await waitFor(() => {
-      expect(getByText('शिक्षा')).toBeTruthy();
+      expect(getAllByText('शिक्षा').length).toBeGreaterThan(0);
     });
 
-    const entryCard = getByText('शिक्षा');
+    const entries = getAllByText('शिक्षा');
+    // The entry card is the one in the list (last element)
+    const entryCard = entries[entries.length - 1];
     fireEvent.press(entryCard);
 
     expect(mockPush).toHaveBeenCalledWith({

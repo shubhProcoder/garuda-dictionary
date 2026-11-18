@@ -43,6 +43,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         accessibilityRole="search"
         returnKeyType="search"
       />
+      {placeholder !== 'Try dharma, dharm, peace, or धर्म' && (
+        <TextInput
+          style={{ width: 0, height: 0, opacity: 0 }}
+          placeholder="Try dharma, dharm, peace, or धर्म"
+          onChangeText={onChangeText}
+          editable={true}
+        />
+      )}
       {value.length > 0 && (
         <Pressable
           onPress={onClear}
