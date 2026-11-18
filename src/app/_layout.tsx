@@ -13,12 +13,22 @@ function RootNavigation() {
   const { colors, isDark, isReady } = useTheme();
 
   useEffect(() => {
-    // Hide native splash screen only once the theme and initial preferences are ready
+    // Hide native splash screen once the theme and initial preferences are ready
     if (isReady) {
       SplashScreen.hideAsync().catch((err) => {
         console.warn('Failed to hide splash screen:', err);
       });
+      return;
     }
+
+    // Safety fallback: ensure splash screen eventually hides even if storage fails or hangs
+    const timeout = setTimeout(() => {
+      SplashScreen.hideAsync().catch((err) => {
+        console.warn('Failed to hide splash screen on fallback timeout:', err);
+      });
+    }, 1500);
+
+    return () => clearTimeout(timeout);
   }, [isReady]);
 
   return (

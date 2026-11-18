@@ -20,6 +20,18 @@ const READING_SIZE_OPTIONS: Array<{ label: string; value: DevanagariReadingSize;
   { label: 'Large', value: 'large', scaleLabel: '115%' },
 ];
 
+/**
+ * Resolves the actual runtime application version from Expo Constants or app config.
+ * Falls back to '1.0.0' if metadata is unavailable.
+ */
+export function getAppVersion(): string {
+  return (
+    Constants.expoConfig?.version ||
+    Constants.manifest2?.extra?.expoClient?.version ||
+    '1.0.0'
+  );
+}
+
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -179,7 +191,7 @@ export default function SettingsScreen() {
 
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Application Version</Text>
-          <Text style={styles.rowValue}>{Constants.expoConfig?.version ?? '1.0.0'}</Text>
+          <Text style={styles.rowValue}>{getAppVersion()}</Text>
         </View>
 
         <View style={styles.separator} />

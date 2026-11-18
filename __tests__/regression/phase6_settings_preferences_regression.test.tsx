@@ -1,15 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act, fireEvent, render, renderHook, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
 import { useColorScheme } from 'react-native';
 import HistoryScreen from '../../src/app/(tabs)/history';
 import LexiconScreen from '../../src/app/(tabs)/lexicon';
 import SavedScreen from '../../src/app/(tabs)/saved';
 import SearchScreen from '../../src/app/(tabs)/index';
-import SettingsScreen from '../../src/app/settings';
+import SettingsScreen, { getAppVersion } from '../../src/app/settings';
+import RootLayout from '../../src/app/_layout';
 import { EntryCard } from '../../src/components/EntryCard';
 import { ThemeProvider, usePreferences, useReadingSize, useTheme } from '../../src/context/ThemeContext';
+import {
+  isOnboardingCompleted,
+  setOnboardingCompleted,
+} from '../../src/storage/onboarding';
 import {
   getAllSettings,
   getDevanagariReadingSize,
@@ -21,10 +27,16 @@ import {
 import { darkThemeColors, DEVANAGARI_SCALES, lightThemeColors, scaleDevanagari, typography } from '../../src/theme/tokens';
 import { DictionaryEntry } from '../../src/types/dictionary';
 
-jest.mock('expo-router', () => ({
-  useRouter: jest.fn(),
-  useLocalSearchParams: jest.fn().mockReturnValue({}),
-}));
+jest.mock('expo-router', () => {
+  const React = require('react');
+  const MockStack: any = ({ children }: any) => React.createElement(React.Fragment, null, children);
+  MockStack.Screen = () => null;
+  return {
+    useRouter: jest.fn(),
+    useLocalSearchParams: jest.fn().mockReturnValue({}),
+    Stack: MockStack,
+  };
+});
 
 const sampleEntry: DictionaryEntry = {
   id: 1,
@@ -148,6 +160,42 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
         expect(result.current.isDark).toBe(true);
       });
     });
+
+    it('updates appearance when OS changes from light to dark while stored preference remains "system"', async () => {
+      await setThemePreference('system');
+      expect(await getThemePreference()).toBe('system');
+
+      // Start in light mode
+      (useColorScheme as jest.Mock).mockReturnValue('light');
+
+      const { result, rerender } = renderHook(() => useTheme(), {
+        wrapper: ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
+      });
+
+      await waitFor(() => {
+        expect(result.current.themePreference).toBe('system');
+      });
+      expect(result.current.isDark).toBe(false);
+
+      // Device changes to dark mode
+      (useColorScheme as jest.Mock).mockReturnValue('dark');
+      rerender({});
+
+      expect(result.current.themePreference).toBe('system');
+      expect(result.current.isDark).toBe(true);
+
+      // Stored preference in AsyncStorage remains 'system'
+      const stored = await getThemePreference();
+      expect(stored).toBe('system');
+    });
+
+    it('eventually hides native splash screen when RootLayout is rendered and theme is ready', async () => {
+      render(<RootLayout />);
+
+      await waitFor(() => {
+        expect(SplashScreen.hideAsync).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('2. Devanagari Reading Size Preference & Headword Scaling', () => {
@@ -251,6 +299,11 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
 
       // About
       expect(getByText('1.0.0')).toBeTruthy();
+    });
+
+    it('resolves the actual application version dynamically with getAppVersion()', () => {
+      const version = getAppVersion();
+      expect(version).toBe('1.0.0');
     });
 
     it('allows changing theme preference from Settings UI', async () => {
@@ -383,6 +436,16 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
       expect(typeof result.current.setDevanagariReadingSize).toBe('function');
       expect(result.current.isDark).toBe(false);
       expect(result.current.devanagariScale).toBe(1.0);
+    });
+
+    it('preserves first-launch onboarding status independently of theme preferences', async () => {
+      expect(await isOnboardingCompleted()).toBe(false);
+      await setOnboardingCompleted();
+      expect(await isOnboardingCompleted()).toBe(true);
+
+      // Changing theme does not reset onboarding status
+      await setThemePreference('dark');
+      expect(await isOnboardingCompleted()).toBe(true);
     });
   });
 });
