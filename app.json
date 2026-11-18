@@ -35,7 +35,17 @@
         {
           "root": "./src/app"
         }
-      ]
-    ]
+      ],
+      "expo-asset"
+    ],
+    "extra": {
+      "router": {
+        "origin": false,
+        "root": "./src/app"
+      },
+      "eas": {
+        "projectId": "0abf0539-c8ae-41cb-bd4e-408b6dc1570b"
+      }
+    }
   }
 }
