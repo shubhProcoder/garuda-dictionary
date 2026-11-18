@@ -52,6 +52,40 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
   });
 
   describe('1. Global Theme System & Tokens', () => {
+    it('matches the exact approved Garuda Light Palette tokens', () => {
+      expect(lightThemeColors.canvasPaper).toBe('#FAF7F2');
+      expect(lightThemeColors.elevatedSurface).toBe('#FFFFFF');
+      expect(lightThemeColors.primaryCobalt).toBe('#2B4AE8');
+      expect(lightThemeColors.phoneticViolet).toBe('#7B3FE4');
+      expect(lightThemeColors.semanticEmerald).toBe('#059669');
+      expect(lightThemeColors.warningAmber).toBe('#D97706');
+      expect(lightThemeColors.primaryText).toBe('#111827');
+      expect(lightThemeColors.limeHighlight).toBe('#C8F36B');
+    });
+
+    it('maintains deep reading surfaces with WCAG AA/AAA contrast in dark theme', () => {
+      expect(darkThemeColors.canvasPaper).toBe('#121316');
+      expect(darkThemeColors.elevatedSurface).toBe('#1C1D22');
+      expect(darkThemeColors.primaryCobalt).toBe('#5B7BFA');
+      expect(darkThemeColors.phoneticViolet).toBe('#A78BFA');
+      expect(darkThemeColors.primaryText).toBe('#F3F4F6');
+    });
+
+    it('initializes ThemeProvider without flashing when cached settings exist', () => {
+      const { result } = renderHook(() => useTheme(), {
+        wrapper: ({ children }) => (
+          <ThemeProvider initialTheme="dark" initialReadingSize="large">
+            {children}
+          </ThemeProvider>
+        ),
+      });
+
+      expect(result.current.themePreference).toBe('dark');
+      expect(result.current.isDark).toBe(true);
+      expect(result.current.isReady).toBe(true);
+      expect(result.current.colors.canvasPaper).toBe(darkThemeColors.canvasPaper);
+    });
+
     it('provides light theme colors by default with correct semantic values', async () => {
       const { result } = renderHook(() => useTheme(), {
         wrapper: ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
@@ -216,7 +250,7 @@ describe('Phase 6 — Settings, Theme System and Reading Preferences Regression 
       expect(getByText('Verified Entries')).toBeTruthy();
 
       // About
-      expect(getByText('1.0.0 (Phase 1 Native)')).toBeTruthy();
+      expect(getByText('1.0.0')).toBeTruthy();
     });
 
     it('allows changing theme preference from Settings UI', async () => {

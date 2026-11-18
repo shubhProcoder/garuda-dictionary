@@ -11,6 +11,8 @@ import {
   DevanagariReadingSize,
   ThemePreference,
   getAllSettings,
+  getCachedReadingSize,
+  getCachedThemePreference,
   setReadingSize as setReadingSizeStorage,
   setThemePreference as setThemePreferenceStorage,
 } from '../storage/settings';
@@ -67,13 +69,19 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 }) => {
   const systemColorScheme = useColorScheme();
 
-  const [themePreference, setThemePreferenceState] = useState<ThemePreference>(
-    initialTheme ?? 'light'
-  );
-  const [readingSize, setReadingSizeState] = useState<DevanagariReadingSize>(
-    initialReadingSize ?? 'medium'
-  );
-  const [isReady, setIsReady] = useState(false);
+  const [themePreference, setThemePreferenceState] = useState<ThemePreference>(() => {
+    return initialTheme ?? getCachedThemePreference() ?? 'light';
+  });
+  const [readingSize, setReadingSizeState] = useState<DevanagariReadingSize>(() => {
+    return initialReadingSize ?? getCachedReadingSize() ?? 'medium';
+  });
+  const [isReady, setIsReady] = useState(() => {
+    // If both initial preferences were supplied or already present in memory, we are immediately ready
+    return Boolean(
+      (initialTheme !== undefined || getCachedThemePreference() !== null) &&
+      (initialReadingSize !== undefined || getCachedReadingSize() !== null)
+    );
+  });
 
   const userChangedThemeRef = React.useRef(false);
   const userChangedSizeRef = React.useRef(false);

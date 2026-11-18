@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
 import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -178,7 +179,7 @@ export default function SettingsScreen() {
 
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Application Version</Text>
-          <Text style={styles.rowValue}>1.0.0 (Phase 1 Native)</Text>
+          <Text style={styles.rowValue}>{Constants.expoConfig?.version ?? '1.0.0'}</Text>
         </View>
 
         <View style={styles.separator} />

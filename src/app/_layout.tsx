@@ -10,14 +10,16 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 function RootNavigation() {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, isReady } = useTheme();
 
   useEffect(() => {
-    // Hide native splash screen once the root layout is mounted and ready
-    SplashScreen.hideAsync().catch((err) => {
-      console.warn('Failed to hide splash screen:', err);
-    });
-  }, []);
+    // Hide native splash screen only once the theme and initial preferences are ready
+    if (isReady) {
+      SplashScreen.hideAsync().catch((err) => {
+        console.warn('Failed to hide splash screen:', err);
+      });
+    }
+  }, [isReady]);
 
   return (
     <>

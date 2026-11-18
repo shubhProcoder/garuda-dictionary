@@ -22,6 +22,20 @@ let inMemoryTheme: ThemePreference | null = null;
 let inMemoryReadingSize: DevanagariReadingSize | null = null;
 
 /**
+ * Returns any synchronously cached theme preference (useful for instant startup without flash).
+ */
+export function getCachedThemePreference(): ThemePreference | null {
+  return inMemoryTheme;
+}
+
+/**
+ * Returns any synchronously cached reading size preference (useful for instant startup without flash).
+ */
+export function getCachedReadingSize(): DevanagariReadingSize | null {
+  return inMemoryReadingSize;
+}
+
+/**
  * Validates a theme string against the supported preferences.
  * Falls back to DEFAULT_THEME_PREFERENCE ('light') for invalid or corrupted data.
  */
