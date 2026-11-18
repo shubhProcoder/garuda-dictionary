@@ -6,35 +6,41 @@ import { colors } from '../theme/tokens';
 export default function RootLayout() {
   return (
     <>
-      <StatusBar style="dark" backgroundColor={colors.paper} />
+      <StatusBar style="dark" backgroundColor={colors.canvasPaper} />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: colors.paper,
+            backgroundColor: colors.canvasPaper,
           },
-          headerTintColor: colors.blue,
+          headerTintColor: colors.primaryCobalt,
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 16,
-            color: colors.ink,
+            color: colors.primaryText,
           },
           contentStyle: {
-            backgroundColor: colors.paper,
+            backgroundColor: colors.canvasPaper,
           },
           headerShadowVisible: false,
         }}
       >
         <Stack.Screen
-          name="index"
+          name="(tabs)"
           options={{
-            title: 'GARUDA DICTIONARY',
-            headerTitleAlign: 'left',
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="entry/[id]"
           options={{
             title: 'WORD DETAIL',
+            headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{
+            title: 'SETTINGS',
             headerBackTitle: 'Back',
           }}
         />

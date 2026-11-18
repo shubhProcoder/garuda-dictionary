@@ -1,17 +1,29 @@
 export const colors = {
-  paper: '#f6f4ed',
-  paperDeep: '#eeece3',
-  white: '#fffefa',
-  ink: '#20221f',
-  muted: '#77796f',
-  line: '#deddd4',
-  blue: '#273fdb',
-  blueDark: '#182cae',
-  lime: '#c8f36a',
-  lavender: '#e9e9ff',
-  success: '#7eac4b',
-  warning: '#d08b3e',
-  error: '#9a3e2b',
+  // Approved Phase 1 Design Tokens
+  canvasPaper: '#FAF7F2',
+  elevatedSurface: '#FFFFFF',
+  primaryCobalt: '#2B4AE8',
+  phoneticViolet: '#7B3FE4',
+  semanticEmerald: '#059669',
+  warningAmber: '#D97706',
+  primaryText: '#111827',
+  limeHighlight: '#C8F36B',
+
+  // Backward-compatible aliases and utility tokens
+  paper: '#FAF7F2',
+  paperDeep: '#F0EDE6',
+  white: '#FFFFFF',
+  surface: '#FFFFFF',
+  ink: '#111827',
+  muted: '#6B7280',
+  line: '#E5E2D9',
+  blue: '#2B4AE8',
+  blueDark: '#1A35B8',
+  lime: '#C8F36B',
+  lavender: '#EEECFA',
+  success: '#059669',
+  warning: '#D97706',
+  error: '#DC2626',
 };
 
 export const spacing = {
