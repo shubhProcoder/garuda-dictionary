@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garuda Dictionary — Design Blueprint Visual Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Approved Garuda Light Palette */
+      --g-light-canvas: #FAF7F2;
+      --g-light-surface: #FFFFFF;
+      --g-light-paper-deep: #F0EDE6;
+      --g-light-line: #E5E2D9;
+      --g-light-ink: #111827;
+      --g-light-muted: #6B7280;
+      --g-light-cobalt: #2B4AE8;
+      --g-light-violet: #7B3FE4;
+      --g-light-emerald: #059669;
+      --g-light-amber: #D97706;
+      --g-light-lime: #C8F36B;
+
+      /* Approved Garuda Dark Palette */
+      --g-dark-canvas: #121316;
+      --g-dark-surface: #1C1D22;
+      --g-dark-paper-deep: #16171B;
+      --g-dark-line: #2B2C33;
+      --g-dark-ink: #F3F4F6;
+      --g-dark-muted: #9CA3AF;
+      --g-dark-cobalt: #5B7BFA;
+      --g-dark-violet: #A78BFA;
+      --g-dark-emerald: #10B981;
+      --g-dark-amber: #F59E0B;
+      --g-dark-lime: #C8F36B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #0F1115;
+      color: #E2E8F0;
+      line-height: 1.5;
+      padding: 32px 24px;
+    }
+
+    header.blueprint-header {
+      max-width: 1380px;
+      margin: 0 auto 32px auto;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #232730;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .blueprint-title h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-emblem {
+      width: 32px;
+      height: 32px;
+      background-color: #2B4AE8;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .blueprint-meta {
+      font-size: 13px;
+      color: #94A3B8;
+      margin-top: 4px;
+    }
+
+    .theme-toggle-bar {
+      display: flex;
+      gap: 8px;
+      background-color: #1A1E26;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid #2D333F;
+    }
+
+    .theme-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #94A3B8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .theme-btn.active {
+      background-color: #2B4AE8;
+      color: #FFFFFF;
+    }
+
+    .board-container {
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    .board-section {
+      margin-bottom: 48px;
+    }
+
+    .board-section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #F8FAFC;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .board-section-desc {
+      font-size: 14px;
+      color: #94A3B8;
+      margin-bottom: 20px;
+    }
+
+    .frames-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* Realistic Android Mobile Device Frame */
+    .device-mockup {
+      width: 380px;
+      height: 780px;
+      border-radius: 36px;
+      background-color: #1E222B;
+      padding: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px #333A48;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .device-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 26px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      font-size: 14px;
+    }
+
+    /* Light Mode Screen */
+    .device-screen.light {
+      background-color: var(--g-light-canvas);
+      color: var(--g-light-ink);
+    }
+
+    /* Dark Mode Screen */
+    .device-screen.dark {
+      background-color: var(--g-dark-canvas);
+      color: var(--g-dark-ink);
+    }
+
+    /* In-Screen Components */
+    .status-bar {
+      height: 28px;
+      padding: 4px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .light .status-bar { color: var(--g-light-ink); }
+    .dark .status-bar { color: var(--g-dark-ink); }
+
+    .app-header {
+      height: 48px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .app-header-gear {
+      font-size: 18px;
+      color: var(--g-light-muted);
+      cursor: pointer;
+    }
+
+    .pinned-search-bar {
+      margin: 4px 16px 12px 16px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .light .pinned-search-bar {
+      background-color: var(--g-light-surface);
+      border: 1px solid var(--g-light-line);
+      color: var(--g-light-ink);
+    }
+
+    .dark .pinned-search-bar {
+      background-color: var(--g-dark-surface);
+      border: 1px solid var(--g-dark-line);
+      color: var(--g-dark-ink);
+    }
+
+    .screen-scroll-body {
+      flex: 1;
+      padding: 0 16px 16px 16px;
+      overflow-y: auto;
+    }
+
+    /* Cards */
+    .wotd-card {
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .light .wotd-card {
+      background-color: var(--g-light-surface);
+      border: 1px solid var(--g-light-line);
+    }
+
+    .dark .wotd-card {
+      background-color: var(--g-dark-surface);
+      border: 1px solid var(--g-dark-line);
+    }
+
+    .kicker {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .light .kicker-cobalt { color: var(--g-light-cobalt); }
+    .dark .kicker-cobalt { color: var(--g-dark-cobalt); }
+
+    .devanagari-headword {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-weight: 700;
+      line-height: 1.32;
+    }
+
+    .transliteration {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--g-light-muted);
+    }
+
+    .entry-card {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--g-light-line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .dark .entry-card {
+      border-bottom-color: var(--g-dark-line);
+    }
+
+    .entry-card-headword {
+      font-size: 20px;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-weight: 700;
+      min-width: 80px;
+      line-height: 1.32;
+    }
+
+    .bottom-tab-bar {
+      height: 52px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid var(--g-light-line);
+      flex-shrink: 0;
+    }
+
+    .light .bottom-tab-bar {
+      background-color: var(--g-light-surface);
+      border-top-color: var(--g-light-line);
+    }
+
+    .dark .bottom-tab-bar {
+      background-color: var(--g-dark-surface);
+      border-top-color: var(--g-dark-line);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 600;
+      gap: 2px;
+    }
+
+    .tab-item.active {
+      color: var(--g-light-cobalt);
+    }
+
+    .dark .tab-item.active {
+      color: var(--g-dark-cobalt);
+    }
+
+    .tab-item.inactive {
+      color: var(--g-light-muted);
+    }
+
+    .chip-deck {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .light .chip {
+      background-color: var(--g-light-paper-deep);
+      color: var(--g-light-ink);
+    }
+
+    .dark .chip {
+      background-color: var(--g-dark-paper-deep);
+      color: var(--g-dark-ink);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="blueprint-header">
+    <div class="blueprint-title">
+      <h1>
+        <div class="brand-emblem">ग</div>
+        Garuda Dictionary — Design Blueprint Preview
+      </h1>
+      <div class="blueprint-meta">Verified production mockups: 393 × 873 dp Android Frame • Noto Sans Devanagari • Strict Tokens</div>
+    </div>
+    <div class="theme-toggle-bar">
+      <button class="theme-btn active" onclick="switchTheme('both')">Side-by-Side</button>
+      <button class="theme-btn" onclick="switchTheme('light')">Light Only</button>
+      <button class="theme-btn" onclick="switchTheme('dark')">Dark Only</button>
+    </div>
+  </header>
+
+  <main class="board-container">
+
+    <!-- BOARD 1: SEARCH & DISCOVERY HOME -->
+    <section class="board-section">
+      <div class="board-section-title">
+        <span>Board 1: Search & Discovery Home (Idle State)</span>
+      </div>
+      <div class="board-section-desc">
+        Word of the Day (Entry #11 धर्म), suggested search chips, and explore deck.
+      </div>
+
+      <div class="frames-grid">
+        <!-- Light Theme Frame -->
+        <div class="device-mockup theme-frame-light">
+          <div class="device-screen light">
+            <div class="status-bar">
+              <span>9:41</span>
+              <span>LTE ■ 100%</span>
+            </div>
+            <div class="app-header">
+              <div class="app-brand">
+                <span style="color:#2B4AE8; font-weight:700;">ग</span>
+                <span>GARUDA</span>
+              </div>
+              <div class="app-header-gear">⚙</div>
+            </div>
+            <div class="pinned-search-bar">
+              <span style="color:#6B7280;">⌕</span>
+              <span style="color:#6B7280;">Search dharma, धर्म or duty...</span>
+            </div>
+            <div class="screen-scroll-body">
+              <div class="wotd-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="kicker kicker-cobalt">WORD OF THE DAY</span>
+                  <span style="color:#2B4AE8; font-size:16px;">★</span>
+                </div>
+                <div class="devanagari-headword" style="font-size:32px; color:#111827; margin:6px 0 2px 0;">धर्म</div>
+                <div class="transliteration" style="margin-bottom:8px;">dharma • noun (masculine)</div>
+                <div style="font-size:13px; line-height:1.4; color:#111827;">1. duty<br>2. religion, moral way of life</div>
+                <div style="font-size:12px; font-style:italic; color:#6B7280; margin-top:8px; border-left:2px solid #2B4AE8; padding-left:8px;">
+                  "धर्म का अर्थ केवल पूजा नहीं, बल्कि कर्तव्य भी है।"
+                </div>
+              </div>
+
+              <div class="kicker" style="color:#6B7280;">SUGGESTED SEARCHES</div>
+              <div class="chip-deck">
+                <div class="chip">dharma</div>
+                <div class="chip">karma</div>
+                <div class="chip">yoga</div>
+                <div class="chip">shanti</div>
+              </div>
+
+              <div class="kicker" style="color:#6B7280;">EXPLORE DICTIONARY</div>
+              <div class="entry-card">
+                <div class="entry-card-headword" style="color:#111827;">शिक्षा</div>
+                <div style="flex:1;">
+                  <div class="transliteration">śikṣā</div>
+                  <div style="font-size:13px; color:#111827;">education, learning</div>
+                </div>
+                <span style="font-size:10px; font-weight:700; background:#F0EDE6; padding:2px 6px; border-radius:4px; color:#6B7280;">NOUN</span>
+              </div>
+              <div class="entry-card">
+                <div class="entry-card-headword" style="color:#111827;">भाषा</div>
+                <div style="flex:1;">
+                  <div class="transliteration">bhāṣā</div>
+                  <div style="font-size:13px; color:#111827;">language, speech</div>
+                </div>
+                <span style="font-size:10px; font-weight:700; background:#F0EDE6; padding:2px 6px; border-radius:4px; color:#6B7280;">NOUN</span>
+              </div>
+            </div>
+            <div class="bottom-tab-bar">
+              <div class="tab-item active"><span>⌕</span><span>Search</span></div>
+              <div class="tab-item inactive"><span>▤</span><span>Lexicon</span></div>
+              <div class="tab-item inactive"><span>★</span><span>Saved</span></div>
+              <div class="tab-item inactive"><span>◷</span><span>History</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dark Theme Frame -->
+        <div class="device-mockup theme-frame-dark">
+          <div class="device-screen dark">
+            <div class="status-bar">
+              <span>9:41</span>
+              <span>LTE ■ 100%</span>
+            </div>
+            <div class="app-header">
+              <div class="app-brand">
+                <span style="color:#5B7BFA; font-weight:700;">ग</span>
+                <span>GARUDA</span>
+              </div>
+              <div class="app-header-gear">⚙</div>
+            </div>
+            <div class="pinned-search-bar">
+              <span style="color:#9CA3AF;">⌕</span>
+              <span style="color:#9CA3AF;">Search dharma, धर्म or duty...</span>
+            </div>
+            <div class="screen-scroll-body">
+              <div class="wotd-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="kicker kicker-cobalt">WORD OF THE DAY</span>
+                  <span style="color:#5B7BFA; font-size:16px;">★</span>
+                </div>
+                <div class="devanagari-headword" style="font-size:32px; color:#F3F4F6; margin:6px 0 2px 0;">धर्म</div>
+                <div class="transliteration" style="margin-bottom:8px;">dharma • noun (masculine)</div>
+                <div style="font-size:13px; line-height:1.4; color:#F3F4F6;">1. duty<br>2. religion, moral way of life</div>
+                <div style="font-size:12px; font-style:italic; color:#9CA3AF; margin-top:8px; border-left:2px solid #5B7BFA; padding-left:8px;">
+                  "धर्म का अर्थ केवल पूजा नहीं, बल्कि कर्तव्य भी है।"
+                </div>
+              </div>
+
+              <div class="kicker" style="color:#9CA3AF;">SUGGESTED SEARCHES</div>
+              <div class="chip-deck">
+                <div class="chip">dharma</div>
+                <div class="chip">karma</div>
+                <div class="chip">yoga</div>
+                <div class="chip">shanti</div>
+              </div>
+
+              <div class="kicker" style="color:#9CA3AF;">EXPLORE DICTIONARY</div>
+              <div class="entry-card">
+                <div class="entry-card-headword" style="color:#F3F4F6;">शिक्षा</div>
+                <div style="flex:1;">
+                  <div class="transliteration">śikṣā</div>
+                  <div style="font-size:13px; color:#F3F4F6;">education, learning</div>
+                </div>
+                <span style="font-size:10px; font-weight:700; background:#16171B; padding:2px 6px; border-radius:4px; color:#9CA3AF;">NOUN</span>
+              </div>
+              <div class="entry-card">
+                <div class="entry-card-headword" style="color:#F3F4F6;">भाषा</div>
+                <div style="flex:1;">
+                  <div class="transliteration">bhāṣā</div>
+                  <div style="font-size:13px; color:#F3F4F6;">language, speech</div>
+                </div>
+                <span style="font-size:10px; font-weight:700; background:#16171B; padding:2px 6px; border-radius:4px; color:#9CA3AF;">NOUN</span>
+              </div>
+            </div>
+            <div class="bottom-tab-bar">
+              <div class="tab-item active"><span>⌕</span><span>Search</span></div>
+              <div class="tab-item inactive"><span>▤</span><span>Lexicon</span></div>
+              <div class="tab-item inactive"><span>★</span><span>Saved</span></div>
+              <div class="tab-item inactive"><span>◷</span><span>History</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOARD 5: WORD DETAIL SCREEN -->
+    <section class="board-section">
+      <div class="board-section-title">
+        <span>Board 5: Word Detail Screen (Deep Editorial Study)</span>
+      </div>
+      <div class="board-section-desc">
+        Detailed view of Entry #11 धर्म opened from Search with "Why This Matched" card and non-clipping Devanagari line height.
+      </div>
+
+      <div class="frames-grid">
+        <!-- Light Theme Word Detail -->
+        <div class="device-mockup theme-frame-light">
+          <div class="device-screen light">
+            <div class="status-bar">
+              <span>9:41</span>
+              <span>LTE ■ 100%</span>
+            </div>
+            <div class="app-header" style="border-bottom: 1px solid #E5E2D9;">
+              <span style="color:#2B4AE8; font-weight:600; cursor:pointer;">← Back</span>
+              <span style="color:#2B4AE8; font-size:18px; cursor:pointer;">★</span>
+            </div>
+            <div class="screen-scroll-body" style="padding-top:12px;">
+              <div style="background:#EEECFA; border:1px solid #7B3FE4; border-radius:10px; padding:10px 12px; margin-bottom:14px;">
+                <div style="font-size:10px; font-weight:700; color:#7B3FE4;">WHY THIS MATCHED</div>
+                <div style="font-size:12px; font-weight:600; color:#111827;">★ EXACT ROMAN MATCH</div>
+                <div style="font-size:11px; color:#6B7280;">Matched romanised spelling "dharma" with 100% confidence.</div>
+              </div>
+
+              <div style="font-size:11px; font-weight:700; color:#2B4AE8; font-family:'JetBrains Mono',monospace;">ENTRY #011</div>
+              <div class="devanagari-headword" style="font-size:48px; color:#111827; margin:4px 0;">धर्म</div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                <span class="transliteration" style="font-size:15px;">dharma</span>
+                <span style="font-size:11px; font-weight:700; background:#F0EDE6; padding:2px 8px; border-radius:4px; color:#059669;">NOUN (MASCULINE)</span>
+              </div>
+
+              <div class="kicker" style="color:#6B7280;">MEANINGS & SENSES</div>
+              <div style="background:#FFFFFF; border:1px solid #E5E2D9; border-radius:8px; padding:10px 12px; margin-bottom:6px; font-size:14px;">
+                <strong style="color:#2B4AE8;">1.</strong> duty
+              </div>
+              <div style="background:#FFFFFF; border:1px solid #E5E2D9; border-radius:8px; padding:10px 12px; margin-bottom:6px; font-size:14px;">
+                <strong style="color:#2B4AE8;">2.</strong> religion
+              </div>
+              <div style="background:#FFFFFF; border:1px solid #E5E2D9; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:14px;">
+                <strong style="color:#2B4AE8;">3.</strong> moral way of life
+              </div>
+
+              <div class="kicker" style="color:#6B7280;">CONTEXTUAL USAGE</div>
+              <div style="background:#F0EDE6; border-left:3px solid #2B4AE8; padding:10px 12px; border-radius:4px; margin-bottom:16px;">
+                <div class="devanagari-headword" style="font-size:14px; color:#111827; margin-bottom:4px;">"धर्म का अर्थ केवल पूजा नहीं, बल्कि कर्तव्य भी है।"</div>
+                <div style="font-size:12px; font-style:italic; color:#6B7280;">(Dharma means not merely worship, but moral duty as well.)</div>
+              </div>
+
+              <div class="kicker" style="color:#6B7280;">ROMANIZED VARIANTS</div>
+              <div class="chip-deck">
+                <div class="chip">dharma</div>
+                <div class="chip">dharm</div>
+              </div>
+
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button style="flex:1; height:42px; background:#2B4AE8; color:white; border:none; border-radius:8px; font-size:13px; font-weight:600;">Copy word</button>
+                <button style="flex:1; height:42px; background:#F0EDE6; color:#111827; border:none; border-radius:8px; font-size:13px; font-weight:600;">Share ↗</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dark Theme Word Detail -->
+        <div class="device-mockup theme-frame-dark">
+          <div class="device-screen dark">
+            <div class="status-bar">
+              <span>9:41</span>
+              <span>LTE ■ 100%</span>
+            </div>
+            <div class="app-header" style="border-bottom: 1px solid #2B2C33;">
+              <span style="color:#5B7BFA; font-weight:600; cursor:pointer;">← Back</span>
+              <span style="color:#5B7BFA; font-size:18px; cursor:pointer;">★</span>
+            </div>
+            <div class="screen-scroll-body" style="padding-top:12px;">
+              <div style="background:#272338; border:1px solid #A78BFA; border-radius:10px; padding:10px 12px; margin-bottom:14px;">
+                <div style="font-size:10px; font-weight:700; color:#A78BFA;">WHY THIS MATCHED</div>
+                <div style="font-size:12px; font-weight:600; color:#F3F4F6;">★ EXACT ROMAN MATCH</div>
+                <div style="font-size:11px; color:#9CA3AF;">Matched romanised spelling "dharma" with 100% confidence.</div>
+              </div>
+
+              <div style="font-size:11px; font-weight:700; color:#5B7BFA; font-family:'JetBrains Mono',monospace;">ENTRY #011</div>
+              <div class="devanagari-headword" style="font-size:48px; color:#F3F4F6; margin:4px 0;">धर्म</div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                <span class="transliteration" style="font-size:15px; color:#9CA3AF;">dharma</span>
+                <span style="font-size:11px; font-weight:700; background:#16171B; padding:2px 8px; border-radius:4px; color:#10B981;">NOUN (MASCULINE)</span>
+              </div>
+
+              <div class="kicker" style="color:#9CA3AF;">MEANINGS & SENSES</div>
+              <div style="background:#1C1D22; border:1px solid #2B2C33; border-radius:8px; padding:10px 12px; margin-bottom:6px; font-size:14px; color:#F3F4F6;">
+                <strong style="color:#5B7BFA;">1.</strong> duty
+              </div>
+              <div style="background:#1C1D22; border:1px solid #2B2C33; border-radius:8px; padding:10px 12px; margin-bottom:6px; font-size:14px; color:#F3F4F6;">
+                <strong style="color:#5B7BFA;">2.</strong> religion
+              </div>
+              <div style="background:#1C1D22; border:1px solid #2B2C33; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:14px; color:#F3F4F6;">
+                <strong style="color:#5B7BFA;">3.</strong> moral way of life
+              </div>
+
+              <div class="kicker" style="color:#9CA3AF;">CONTEXTUAL USAGE</div>
+              <div style="background:#16171B; border-left:3px solid #5B7BFA; padding:10px 12px; border-radius:4px; margin-bottom:16px;">
+                <div class="devanagari-headword" style="font-size:14px; color:#F3F4F6; margin-bottom:4px;">"धर्म का अर्थ केवल पूजा नहीं, बल्कि कर्तव्य भी है।"</div>
+                <div style="font-size:12px; font-style:italic; color:#9CA3AF;">(Dharma means not merely worship, but moral duty as well.)</div>
+              </div>
+
+              <div class="kicker" style="color:#9CA3AF;">ROMANIZED VARIANTS</div>
+              <div class="chip-deck">
+                <div class="chip">dharma</div>
+                <div class="chip">dharm</div>
+              </div>
+
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button style="flex:1; height:42px; background:#5B7BFA; color:white; border:none; border-radius:8px; font-size:13px; font-weight:600;">Copy word</button>
+                <button style="flex:1; height:42px; background:#1C1D22; color:#F3F4F6; border:1px solid #2B2C33; border-radius:8px; font-size:13px; font-weight:600;">Share ↗</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function switchTheme(mode) {
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const lights = document.querySelectorAll('.theme-frame-light');
+      const darks = document.querySelectorAll('.theme-frame-dark');
+
+      if (mode === 'light') {
+        lights.forEach(el => el.style.display = 'block');
+        darks.forEach(el => el.style.display = 'none');
+      } else if (mode === 'dark') {
+        lights.forEach(el => el.style.display = 'none');
+        darks.forEach(el => el.style.display = 'block');
+      } else {
+        lights.forEach(el => el.style.display = 'block');
+        darks.forEach(el => el.style.display = 'block');
+      }
+    }
+  </script>
+</body>
+</html>
