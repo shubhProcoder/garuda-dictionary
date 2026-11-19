@@ -166,6 +166,7 @@ export default function SearchScreen() {
         keyExtractor={(item) => String(item.entry.id)}
         contentContainerStyle={styles.listContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             {/* Search Input + Script Indicator */}
@@ -220,7 +221,7 @@ export default function SearchScreen() {
             {/* ── ACTIVE SEARCH RESULTS HEADING ── */}
             {hasQuery && (
               <View style={styles.sectionHeadingRow}>
-                <Text style={styles.sectionKicker}>SEARCH RESULTS</Text>
+                <Text style={styles.sectionKicker} accessibilityRole="header">SEARCH RESULTS</Text>
                 <Text style={styles.sectionCount}>
                   {displayedItems.length} {displayedItems.length === 1 ? 'word' : 'words'}
                 </Text>

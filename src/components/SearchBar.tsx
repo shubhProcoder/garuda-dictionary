@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AccessibilityProps,
+  Animated,
+  Keyboard,
   Pressable,
   StyleSheet,
   Text,
@@ -8,7 +10,8 @@ import {
   View,
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { ThemeColors, colors as defaultColors, spacing, typography } from '../theme/tokens';
+import { useReducedMotion, motionDurations } from '../theme/motion';
+import { ThemeColors, borderRadius, colors as defaultColors, spacing, typography } from '../theme/tokens';
 
 export interface SearchBarProps extends AccessibilityProps {
   value: string;
@@ -16,6 +19,7 @@ export interface SearchBarProps extends AccessibilityProps {
   onClear: () => void;
   placeholder?: string;
   autoFocus?: boolean;
+  onSubmitEditing?: () => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -24,13 +28,46 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onClear,
   placeholder = 'Search dharma, धर्म or duty...',
   autoFocus = false,
+  onSubmitEditing,
   ...accessibilityProps
 }) => {
   const { colors } = useTheme();
+  const isReducedMotion = useReducedMotion();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
+  const [isFocused, setIsFocused] = useState(false);
+  const clearButtonOpacity = useRef(new Animated.Value(value.length > 0 ? 1 : 0)).current;
+
+  useEffect(() => {
+    const hasText = value.length > 0;
+    if (isReducedMotion) {
+      clearButtonOpacity.setValue(hasText ? 1 : 0);
+      return;
+    }
+    const anim = Animated.timing(clearButtonOpacity, {
+      toValue: hasText ? 1 : 0,
+      duration: motionDurations.fast,
+      useNativeDriver: true,
+    });
+    anim.start();
+    return () => {
+      anim.stop();
+    };
+  }, [value, isReducedMotion, clearButtonOpacity]);
+
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+    onSubmitEditing?.();
+  };
+
   return (
-    <View style={styles.container} {...accessibilityProps}>
+    <View
+      style={[
+        styles.container,
+        isFocused && styles.containerFocused,
+      ]}
+      {...accessibilityProps}
+    >
       <Text style={styles.searchIcon} aria-hidden>
         ⌕
       </Text>
@@ -46,17 +83,25 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         accessibilityLabel="Search Hindi words in Devanagari, Roman, or English"
         accessibilityRole="search"
         returnKeyType="search"
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onSubmitEditing={handleSubmit}
       />
       {value.length > 0 && (
-        <Pressable
-          onPress={onClear}
-          style={styles.clearButton}
-          accessibilityLabel="Clear search text"
-          accessibilityRole="button"
-          hitSlop={8}
-        >
-          <Text style={styles.clearIcon}>×</Text>
-        </Pressable>
+        <Animated.View style={{ opacity: clearButtonOpacity }}>
+          <Pressable
+            onPress={onClear}
+            style={({ pressed }) => [
+              styles.clearButton,
+              pressed && styles.clearButtonPressed,
+            ]}
+            accessibilityLabel="Clear search text"
+            accessibilityRole="button"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text style={styles.clearIcon}>×</Text>
+          </Pressable>
+        </Animated.View>
       )}
     </View>
   );
@@ -71,6 +116,7 @@ function createStyles(themeColors: ThemeColors) {
       backgroundColor: themeColors.elevatedSurface,
       borderColor: themeColors.line,
       borderWidth: 1,
+      borderRadius: borderRadius.md,
       paddingHorizontal: spacing.md,
       gap: spacing.sm,
       shadowColor: '#28281c',
@@ -78,6 +124,12 @@ function createStyles(themeColors: ThemeColors) {
       shadowOpacity: 0.05,
       shadowRadius: 12,
       elevation: 2,
+    },
+    containerFocused: {
+      borderColor: themeColors.primaryCobalt,
+      shadowColor: themeColors.primaryCobalt,
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
     },
     searchIcon: {
       fontSize: 22,
@@ -89,11 +141,17 @@ function createStyles(themeColors: ThemeColors) {
       fontSize: typography.fontSize.bodyLarge,
       color: themeColors.primaryText,
       paddingVertical: spacing.sm,
+      minHeight: 44,
     },
     clearButton: {
-      padding: spacing.xs,
+      width: 36,
+      height: 36,
+      borderRadius: borderRadius.pill,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    clearButtonPressed: {
+      backgroundColor: themeColors.paperDeep,
     },
     clearIcon: {
       fontSize: 22,

@@ -76,6 +76,15 @@ export function scaleDevanagari(baseFontSize: number, size: DevanagariScaleValue
   return Math.round(baseFontSize * factor);
 }
 
+/**
+ * Calculates a comfortable, non-clipping line height for Devanagari text.
+ * A multiplier of 1.30x-1.35x guarantees room for both top vowel matras (ै, ौ, ी)
+ * and bottom conjuncts/subscripts (ु, ू, ृ, ्).
+ */
+export function devanagariLineHeight(fontSize: number, multiplier = 1.32): number {
+  return Math.round(fontSize * multiplier);
+}
+
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -113,4 +122,9 @@ export const borderRadius = {
   md: 10,
   lg: 14,
   pill: 999,
+};
+
+export const touchTargets = {
+  min: 44,
+  androidRecommended: 48,
 };

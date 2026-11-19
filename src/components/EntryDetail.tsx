@@ -1,6 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Animated,
   Pressable,
   ScrollView,
   Share,
@@ -9,7 +10,8 @@ import {
   View,
 } from 'react-native';
 import { useReadingSize, useTheme } from '../context/ThemeContext';
-import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
+import { useReducedMotion, motionDurations } from '../theme/motion';
+import { ThemeColors, borderRadius, devanagariLineHeight, spacing, typography } from '../theme/tokens';
 import { DictionaryEntry, MatchType, MatchedField } from '../types/dictionary';
 
 export interface MatchContext {
@@ -85,19 +87,44 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
 }) => {
   const { colors } = useTheme();
   const { devanagariScale } = useReadingSize();
+  const isReducedMotion = useReducedMotion();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   const uniqueSpellings = Array.from(new Set(entry.romanised));
   const entryIdFormatted = String(entry.id).padStart(3, '0');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!toastMessage) return;
+
+    if (isReducedMotion) {
+      toastAnim.setValue(1);
+    } else {
+      Animated.timing(toastAnim, {
+        toValue: 1,
+        duration: motionDurations.toast,
+        useNativeDriver: true,
+      }).start();
+    }
+
     const timer = setTimeout(() => {
-      setToastMessage(null);
-    }, 2500);
+      if (isReducedMotion) {
+        toastAnim.setValue(0);
+        setToastMessage(null);
+      } else {
+        Animated.timing(toastAnim, {
+          toValue: 0,
+          duration: motionDurations.toast,
+          useNativeDriver: true,
+        }).start(() => {
+          setToastMessage(null);
+        });
+      }
+    }, 2200);
+
     return () => clearTimeout(timer);
-  }, [toastMessage]);
+  }, [toastMessage, isReducedMotion, toastAnim]);
 
   const handleCopyWord = async () => {
     try {
@@ -133,6 +160,8 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
   };
 
   const matchBadge = getMatchBadgeLabel(matchContext?.matchType);
+  const headwordFontSize = Math.round(typography.fontSize.headwordLarge * devanagariScale);
+  const headwordLineHeight = devanagariLineHeight(headwordFontSize);
 
   return (
     <View style={styles.outerContainer}>
@@ -144,11 +173,14 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
         <View style={styles.navBar}>
           {onBack ? (
             <Pressable
-              style={styles.backButton}
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.backButtonPressed,
+              ]}
               onPress={onBack}
               accessibilityRole="button"
               accessibilityLabel="Back to word list"
-              hitSlop={8}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <Text style={styles.backButtonText}>← BACK</Text>
             </Pressable>
@@ -157,14 +189,16 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
           )}
 
           <Pressable
-            style={[
+            style={({ pressed }) => [
               styles.bookmarkButton,
               isBookmarked && styles.bookmarkButtonActive,
+              pressed && styles.bookmarkButtonPressed,
             ]}
             onPress={onToggleBookmark}
             accessibilityRole="button"
+            accessibilityState={{ selected: isBookmarked }}
             accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Save word'}
-            hitSlop={8}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text
               style={[
@@ -227,7 +261,7 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
           <Text
             style={[
               styles.headword,
-              { fontSize: Math.round(typography.fontSize.headwordLarge * devanagariScale) },
+              { fontSize: headwordFontSize, lineHeight: headwordLineHeight },
             ]}
           >
             {entry.headword}
@@ -241,31 +275,40 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
           {/* Action Row: Copy Word, Copy Entry, Share */}
           <View style={styles.actionRow}>
             <Pressable
-              style={styles.actionButton}
+              style={({ pressed }) => [
+                styles.actionButton,
+                pressed && styles.actionButtonPressed,
+              ]}
               onPress={handleCopyWord}
               accessibilityRole="button"
               accessibilityLabel="Copy word"
-              hitSlop={6}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Text style={styles.actionButtonText}>📋 Copy word</Text>
             </Pressable>
 
             <Pressable
-              style={styles.actionButton}
+              style={({ pressed }) => [
+                styles.actionButton,
+                pressed && styles.actionButtonPressed,
+              ]}
               onPress={handleCopyEntry}
               accessibilityRole="button"
               accessibilityLabel="Copy full entry"
-              hitSlop={6}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Text style={styles.actionButtonText}>📄 Copy entry</Text>
             </Pressable>
 
             <Pressable
-              style={styles.actionButton}
+              style={({ pressed }) => [
+                styles.actionButton,
+                pressed && styles.actionButtonPressed,
+              ]}
               onPress={handleShare}
               accessibilityRole="button"
               accessibilityLabel="Share entry"
-              hitSlop={6}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Text style={styles.actionButtonText}>↗ Share</Text>
             </Pressable>
@@ -321,12 +364,25 @@ export const EntryDetail: React.FC<EntryDetailProps> = ({
 
       {/* Temporary Floating Toast Feedback */}
       {toastMessage && (
-        <View
-          style={styles.toastContainer}
+        <Animated.View
+          style={[
+            styles.toastContainer,
+            {
+              opacity: toastAnim,
+              transform: [
+                {
+                  translateY: toastAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [8, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
           accessibilityLiveRegion="polite"
         >
           <Text style={styles.toastText}>{toastMessage}</Text>
-        </View>
+        </Animated.View>
       )}
     </View>
   );
@@ -350,10 +406,16 @@ function createStyles(theme: ThemeColors) {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: spacing.md,
+      minHeight: 48,
     },
     backButton: {
-      paddingVertical: spacing.xs,
-      paddingHorizontal: spacing.xs,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.sm,
+      minHeight: 44,
+      justifyContent: 'center',
+    },
+    backButtonPressed: {
+      opacity: 0.65,
     },
     backButtonText: {
       color: theme.primaryCobalt,
@@ -378,12 +440,16 @@ function createStyles(theme: ThemeColors) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.xs,
-      paddingHorizontal: spacing.sm + 2,
-      paddingVertical: spacing.xs + 2,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      minHeight: 44,
       borderWidth: 1,
       borderColor: theme.line,
       borderRadius: borderRadius.sm,
       backgroundColor: theme.elevatedSurface,
+    },
+    bookmarkButtonPressed: {
+      backgroundColor: theme.paperDeep,
     },
     bookmarkButtonActive: {
       borderColor: theme.primaryCobalt,
@@ -461,7 +527,6 @@ function createStyles(theme: ThemeColors) {
     headword: {
       color: theme.primaryText,
       fontWeight: typography.fontWeight.bold,
-      lineHeight: 64,
     },
     transliteration: {
       fontSize: typography.fontSize.heading,
@@ -501,6 +566,11 @@ function createStyles(theme: ThemeColors) {
       borderRadius: borderRadius.sm,
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.sm,
+      minHeight: 44,
+      justifyContent: 'center',
+    },
+    actionButtonPressed: {
+      backgroundColor: theme.paperDeep,
     },
     actionButtonText: {
       fontSize: typography.fontSize.caption,

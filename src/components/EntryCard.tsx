@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useReadingSize, useTheme } from '../context/ThemeContext';
-import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
+import { ThemeColors, borderRadius, devanagariLineHeight, spacing, typography } from '../theme/tokens';
 import { DictionaryEntry, SearchResult } from '../types/dictionary';
 
 export interface EntryCardProps {
@@ -27,6 +27,7 @@ export const EntryCard: React.FC<EntryCardProps> = ({
   const cleanPos = entry.pos.replace(/\s*\([^)]*\)/g, '');
 
   const headwordFontSize = Math.round(typography.fontSize.heading * devanagariScale);
+  const headwordLineHeight = devanagariLineHeight(headwordFontSize);
 
   return (
     <Pressable
@@ -39,7 +40,12 @@ export const EntryCard: React.FC<EntryCardProps> = ({
       accessibilityLabel={`${entry.headword}, ${entry.transliteration}, meaning: ${primaryMeaning}`}
     >
       <View style={styles.headwordContainer}>
-        <Text style={[styles.headword, { fontSize: headwordFontSize }]}>
+        <Text
+          style={[
+            styles.headword,
+            { fontSize: headwordFontSize, lineHeight: headwordLineHeight },
+          ]}
+        >
           {entry.headword}
         </Text>
       </View>
@@ -53,13 +59,17 @@ export const EntryCard: React.FC<EntryCardProps> = ({
             <Pressable
               onPress={onToggleBookmark}
               accessibilityRole="button"
+              accessibilityState={{ selected: isBookmarked }}
               accessibilityLabel={
                 isBookmarked
                   ? `Remove ${entry.headword} from saved words`
                   : `Save ${entry.headword}`
               }
-              hitSlop={8}
-              style={styles.bookmarkButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              style={({ pressed }) => [
+                styles.bookmarkButton,
+                pressed && styles.bookmarkButtonPressed,
+              ]}
             >
               <Text
                 style={[
@@ -110,10 +120,11 @@ function createStyles(theme: ThemeColors) {
       gap: spacing.md,
     },
     cardPressed: {
-      backgroundColor: 'rgba(128, 128, 128, 0.12)',
+      backgroundColor: theme.paperDeep,
     },
     headwordContainer: {
-      width: 88,
+      minWidth: 80,
+      maxWidth: 120,
       justifyContent: 'center',
     },
     headword: {
@@ -140,10 +151,16 @@ function createStyles(theme: ThemeColors) {
       color: theme.primaryCobalt,
     },
     bookmarkButton: {
-      paddingHorizontal: 2,
-      paddingVertical: 1,
+      paddingHorizontal: 4,
+      paddingVertical: 4,
+      minWidth: 24,
+      minHeight: 24,
+      borderRadius: borderRadius.sm,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    bookmarkButtonPressed: {
+      backgroundColor: theme.paperDeep,
     },
     bookmarkButtonIcon: {
       fontSize: 14,

@@ -12,7 +12,7 @@ import { EntryDetail, MatchContext } from '../../components/EntryDetail';
 import { useTheme } from '../../context/ThemeContext';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useDictionary } from '../../hooks/useDictionary';
-import { ThemeColors, spacing, typography } from '../../theme/tokens';
+import { ThemeColors, borderRadius, spacing, typography } from '../../theme/tokens';
 import { MatchType, MatchedField } from '../../types/dictionary';
 
 export default function EntryDetailScreen() {
@@ -56,11 +56,14 @@ export default function EntryDetailScreen() {
               : 'No entry ID was specified.'}
           </Text>
           <Pressable
-            style={styles.backButton}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.backButtonPressed,
+            ]}
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Go back"
-            hitSlop={8}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Text style={styles.backButtonText}>← Go back</Text>
           </Pressable>
@@ -125,9 +128,15 @@ function createStyles(theme: ThemeColors) {
     backButton: {
       paddingVertical: spacing.sm,
       paddingHorizontal: spacing.lg,
+      minHeight: 44,
+      justifyContent: 'center',
+      alignItems: 'center',
       borderWidth: 1,
       borderColor: theme.primaryCobalt,
-      borderRadius: 4,
+      borderRadius: borderRadius.sm,
+    },
+    backButtonPressed: {
+      backgroundColor: theme.paperDeep,
     },
     backButtonText: {
       color: theme.primaryCobalt,

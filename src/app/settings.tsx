@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReadingSize, useTheme } from '../context/ThemeContext';
 import { useDictionary } from '../hooks/useDictionary';
 import { DevanagariReadingSize, ThemePreference } from '../storage/settings';
-import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
+import { ThemeColors, borderRadius, devanagariLineHeight, spacing, typography } from '../theme/tokens';
 
 const THEME_OPTIONS: Array<{ label: string; value: ThemePreference; description: string }> = [
   { label: 'Light', value: 'light', description: 'Garuda warm paper identity' },
@@ -57,18 +57,22 @@ export default function SettingsScreen() {
     >
       {/* Back Button */}
       <Pressable
-        style={styles.backButton}
+        style={({ pressed }) => [
+          styles.backButton,
+          pressed && styles.backButtonPressed,
+        ]}
         onPress={() => router.back()}
         accessibilityRole="button"
         accessibilityLabel="Go back"
+        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       >
         <Text style={styles.backButtonText}>← BACK</Text>
       </Pressable>
 
       {/* Screen Title */}
       <View style={styles.titleSection}>
-        <Text style={styles.kicker}>APPLICATION SETTINGS</Text>
-        <Text style={styles.heading}>Garuda Dictionary</Text>
+        <Text style={styles.kicker} accessibilityRole="header">APPLICATION SETTINGS</Text>
+        <Text style={styles.heading} accessibilityRole="header">Garuda Dictionary</Text>
         <Text style={styles.description}>
           A mobile-first Hindi and Sanskrit dictionary designed for discovery through
           Devanagari, Romanized input, and English meanings.
@@ -77,16 +81,20 @@ export default function SettingsScreen() {
 
       {/* 1. Appearance Section */}
       <View style={styles.card}>
-        <Text style={styles.cardHeader}>APPEARANCE</Text>
+        <Text style={styles.cardHeader} accessibilityRole="header">APPEARANCE</Text>
         <Text style={styles.sectionSubtitle}>Choose how Garuda looks on your device.</Text>
 
-        <View style={styles.optionsRow}>
+        <View style={styles.optionsRow} accessibilityRole="radiogroup">
           {THEME_OPTIONS.map((opt) => {
             const isSelected = themePreference === opt.value;
             return (
               <Pressable
                 key={opt.value}
-                style={[styles.optionChip, isSelected && styles.optionChipSelected]}
+                style={({ pressed }) => [
+                  styles.optionChip,
+                  isSelected && styles.optionChipSelected,
+                  pressed && styles.optionChipPressed,
+                ]}
                 onPress={() => setThemePreference(opt.value)}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: isSelected }}
@@ -109,16 +117,20 @@ export default function SettingsScreen() {
 
       {/* 2. Devanagari Reading Size Section */}
       <View style={styles.card}>
-        <Text style={styles.cardHeader}>DEVANAGARI READING SIZE</Text>
+        <Text style={styles.cardHeader} accessibilityRole="header">DEVANAGARI READING SIZE</Text>
         <Text style={styles.sectionSubtitle}>Adjust the size of Hindi words throughout the app.</Text>
 
-        <View style={styles.segmentedRow}>
+        <View style={styles.segmentedRow} accessibilityRole="radiogroup">
           {READING_SIZE_OPTIONS.map((opt) => {
             const isSelected = readingSize === opt.value;
             return (
               <Pressable
                 key={opt.value}
-                style={[styles.segmentButton, isSelected && styles.segmentButtonSelected]}
+                style={({ pressed }) => [
+                  styles.segmentButton,
+                  isSelected && styles.segmentButtonSelected,
+                  pressed && styles.segmentButtonPressed,
+                ]}
                 onPress={() => setReadingSize(opt.value)}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: isSelected }}
@@ -137,12 +149,15 @@ export default function SettingsScreen() {
 
         {/* Live Devanagari Preview */}
         <View style={styles.previewContainer}>
-          <Text style={styles.previewHeader}>LIVE DEVANAGARI PREVIEW</Text>
+          <Text style={styles.previewHeader} accessibilityRole="header">LIVE DEVANAGARI PREVIEW</Text>
           <View style={styles.previewBox}>
             <Text
               style={[
                 styles.previewText,
-                { fontSize: Math.round(typography.fontSize.display * devanagariScale) },
+                {
+                  fontSize: Math.round(typography.fontSize.display * devanagariScale),
+                  lineHeight: devanagariLineHeight(Math.round(typography.fontSize.display * devanagariScale)),
+                },
               ]}
             >
               धर्म · ज्ञान · प्रकाश
@@ -156,7 +171,7 @@ export default function SettingsScreen() {
 
       {/* 3. Dictionary Dataset Card */}
       <View style={styles.card}>
-        <Text style={styles.cardHeader}>DICTIONARY DATASET</Text>
+        <Text style={styles.cardHeader} accessibilityRole="header">DICTIONARY DATASET</Text>
 
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Verified Entries</Text>
@@ -231,8 +246,14 @@ function createStyles(theme: ThemeColors) {
     },
     backButton: {
       paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.sm,
+      minHeight: 44,
+      justifyContent: 'center',
       marginBottom: spacing.md,
       alignSelf: 'flex-start',
+    },
+    backButtonPressed: {
+      opacity: 0.65,
     },
     backButtonText: {
       color: theme.primaryCobalt,
@@ -287,10 +308,14 @@ function createStyles(theme: ThemeColors) {
     },
     optionChip: {
       padding: spacing.md,
+      minHeight: 48,
       borderWidth: 1,
       borderColor: theme.line,
       borderRadius: borderRadius.sm,
       backgroundColor: theme.paperDeep,
+    },
+    optionChipPressed: {
+      backgroundColor: theme.line,
     },
     optionChipSelected: {
       borderColor: theme.primaryCobalt,
@@ -332,12 +357,16 @@ function createStyles(theme: ThemeColors) {
       flex: 1,
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.sm,
+      minHeight: 48,
       borderWidth: 1,
       borderColor: theme.line,
       borderRadius: borderRadius.sm,
       backgroundColor: theme.paperDeep,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    segmentButtonPressed: {
+      backgroundColor: theme.line,
     },
     segmentButtonSelected: {
       borderColor: theme.primaryCobalt,
@@ -380,7 +409,7 @@ function createStyles(theme: ThemeColors) {
       paddingHorizontal: spacing.md,
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: 80,
+      minHeight: 88,
     },
     previewText: {
       fontWeight: typography.fontWeight.semibold,

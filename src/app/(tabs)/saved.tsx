@@ -65,7 +65,7 @@ export default function SavedScreen() {
           <View style={styles.headerContainer}>
             <View style={styles.titleRow}>
               <View>
-                <Text style={styles.kicker}>YOUR COLLECTION</Text>
+                <Text style={styles.kicker} accessibilityRole="header">YOUR COLLECTION</Text>
                 <Text style={styles.title} accessibilityRole="header">
                   Saved Words
                 </Text>
@@ -168,7 +168,7 @@ function createStyles(colors: ThemeColors) {
       fontSize: typography.fontSize.caption,
       color: colors.muted,
       marginTop: spacing.xs,
-      lineHeight: 16,
+      lineHeight: 18,
     },
   });
 }

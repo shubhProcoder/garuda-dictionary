@@ -23,19 +23,24 @@ export const POSFilter: React.FC<POSFilterProps> = ({ value, onChange, counts })
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>PART OF SPEECH</Text>
-      <View style={styles.optionsRow}>
+      <Text style={styles.label} accessibilityRole="header">PART OF SPEECH</Text>
+      <View style={styles.optionsRow} accessibilityRole="radiogroup">
         {OPTIONS.map((option) => {
           const isSelected = value === option.value;
           const count = counts?.[option.value];
           return (
             <Pressable
               key={option.value}
-              style={[styles.chip, isSelected && styles.chipSelected]}
+              style={({ pressed }) => [
+                styles.chip,
+                isSelected && styles.chipSelected,
+                pressed && styles.chipPressed,
+              ]}
               onPress={() => onChange(option.value)}
               accessibilityRole="radio"
               accessibilityState={{ selected: isSelected }}
               accessibilityLabel={`Filter by ${option.label}${count !== undefined ? `, ${count} entries` : ''}`}
+              hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
             >
               <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
                 {option.label}
@@ -75,16 +80,20 @@ function createStyles(colors: ThemeColors) {
     chip: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: spacing.sm + 2,
-      paddingVertical: spacing.xs + 1,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs + 2,
+      minHeight: 38,
       borderWidth: 1,
       borderColor: colors.line,
       backgroundColor: 'transparent',
-      borderRadius: borderRadius.xs,
+      borderRadius: borderRadius.sm,
     },
     chipSelected: {
       borderColor: colors.primaryCobalt,
       backgroundColor: colors.elevatedSurface,
+    },
+    chipPressed: {
+      backgroundColor: colors.paperDeep,
     },
     chipText: {
       fontSize: typography.fontSize.caption,

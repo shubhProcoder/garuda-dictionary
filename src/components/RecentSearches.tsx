@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
+import { ThemeColors, borderRadius, devanagariLineHeight, spacing, typography } from '../theme/tokens';
 
 export interface RecentSearchesProps {
   recents: string[];
@@ -24,9 +24,18 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.label}>RECENT SEARCHES</Text>
+        <Text style={styles.label} accessibilityRole="header">RECENT SEARCHES</Text>
         {onClear && (
-          <Pressable onPress={onClear} hitSlop={6} accessibilityRole="button" accessibilityLabel="Clear recents">
+          <Pressable
+            onPress={onClear}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Clear recents"
+            style={({ pressed }) => [
+              styles.clearButton,
+              pressed && styles.clearPressed,
+            ]}
+          >
             <Text style={styles.clearText}>Clear</Text>
           </Pressable>
         )}
@@ -39,10 +48,14 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
         {recents.map((item, index) => (
           <Pressable
             key={index}
-            style={styles.chip}
+            style={({ pressed }) => [
+              styles.chip,
+              pressed && styles.chipPressed,
+            ]}
             onPress={() => onSelectQuery(item)}
             accessibilityRole="button"
             accessibilityLabel={`Search recent query ${item}`}
+            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
           >
             <Text style={styles.chipText}>{item}</Text>
           </Pressable>
@@ -69,6 +82,13 @@ function createStyles(colors: ThemeColors) {
       fontWeight: typography.fontWeight.bold,
       letterSpacing: 1,
     },
+    clearButton: {
+      paddingVertical: 2,
+      paddingHorizontal: 4,
+    },
+    clearPressed: {
+      opacity: 0.65,
+    },
     clearText: {
       fontSize: typography.fontSize.badge,
       color: colors.primaryCobalt,
@@ -80,15 +100,23 @@ function createStyles(colors: ThemeColors) {
     },
     chip: {
       paddingHorizontal: spacing.sm + 2,
-      paddingVertical: spacing.xs,
+      paddingVertical: spacing.xs + 2,
+      minHeight: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.line,
       backgroundColor: colors.elevatedSurface,
       borderRadius: borderRadius.xs,
     },
+    chipPressed: {
+      backgroundColor: colors.paperDeep,
+      borderColor: colors.primaryCobalt,
+    },
     chipText: {
       fontSize: typography.fontSize.caption,
       color: colors.primaryText,
+      lineHeight: devanagariLineHeight(typography.fontSize.caption),
     },
   });
 }

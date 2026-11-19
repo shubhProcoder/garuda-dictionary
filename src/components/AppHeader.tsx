@@ -47,11 +47,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ totalCount = 70 }) => {
         </View>
 
         <Pressable
-          style={styles.settingsButton}
+          style={({ pressed }) => [
+            styles.settingsButton,
+            pressed && styles.settingsButtonPressed,
+          ]}
           onPress={handleOpenSettings}
           accessibilityRole="button"
           accessibilityLabel="Open settings"
-          hitSlop={8}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text style={styles.gearIcon}>⚙</Text>
         </Pressable>
@@ -92,6 +95,7 @@ function createStyles(theme: ThemeColors) {
     },
     brandMarkText: {
       fontSize: 18,
+      lineHeight: 22,
       fontWeight: typography.fontWeight.bold,
       color: '#FFFFFF',
     },
@@ -145,6 +149,9 @@ function createStyles(theme: ThemeColors) {
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: theme.paperDeep,
+    },
+    settingsButtonPressed: {
+      backgroundColor: theme.line,
     },
     gearIcon: {
       fontSize: 18,

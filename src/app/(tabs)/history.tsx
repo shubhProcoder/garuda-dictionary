@@ -16,7 +16,7 @@ import { searchEntries } from '../../engine/search';
 import { useDictionary } from '../../hooks/useDictionary';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useTheme } from '../../context/ThemeContext';
-import { ThemeColors, borderRadius, spacing, typography } from '../../theme/tokens';
+import { ThemeColors, borderRadius, devanagariLineHeight, spacing, typography } from '../../theme/tokens';
 
 export default function HistoryScreen() {
   const router = useRouter();
@@ -91,7 +91,7 @@ export default function HistoryScreen() {
           <View style={styles.headerContainer}>
             <View style={styles.titleRow}>
               <View style={styles.titleWithBadge}>
-                <Text style={styles.kicker}>SEARCH LOG</Text>
+                <Text style={styles.kicker} accessibilityRole="header">SEARCH LOG</Text>
                 <Text style={styles.title} accessibilityRole="header">
                   Search <Text>History</Text>
                 </Text>
@@ -106,11 +106,14 @@ export default function HistoryScreen() {
 
                 {recents.length > 0 && (
                   <Pressable
-                    style={styles.clearButton}
+                    style={({ pressed }) => [
+                      styles.clearButton,
+                      pressed && styles.clearButtonPressed,
+                    ]}
                     onPress={handleClearAll}
                     accessibilityRole="button"
                     accessibilityLabel="Clear all search history"
-                    hitSlop={6}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Text style={styles.clearButtonText}>Clear all</Text>
                   </Pressable>
@@ -234,12 +237,19 @@ function createStyles(colors: ThemeColors, isDark: boolean) {
       fontWeight: typography.fontWeight.bold,
     },
     clearButton: {
-      paddingHorizontal: spacing.sm + 2,
-      paddingVertical: spacing.xs,
-      borderRadius: borderRadius.xs,
+      paddingHorizontal: spacing.sm + 4,
+      paddingVertical: spacing.xs + 2,
+      minHeight: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: borderRadius.sm,
       borderWidth: 1,
       borderColor: colors.line,
       backgroundColor: colors.elevatedSurface,
+    },
+    clearButtonPressed: {
+      backgroundColor: colors.paperDeep,
+      opacity: 0.8,
     },
     clearButtonText: {
       fontSize: typography.fontSize.caption,
@@ -250,7 +260,7 @@ function createStyles(colors: ThemeColors, isDark: boolean) {
       fontSize: typography.fontSize.caption,
       color: colors.muted,
       marginTop: spacing.xs,
-      lineHeight: 16,
+      lineHeight: 18,
     },
     historyRow: {
       flexDirection: 'row',
@@ -259,6 +269,7 @@ function createStyles(colors: ThemeColors, isDark: boolean) {
       paddingHorizontal: spacing.sm,
       borderBottomWidth: 1,
       borderBottomColor: colors.line,
+      minHeight: 52,
       gap: spacing.md,
     },
     historyRowPressed: {
@@ -284,6 +295,7 @@ function createStyles(colors: ThemeColors, isDark: boolean) {
       fontSize: typography.fontSize.bodyLarge,
       fontWeight: typography.fontWeight.semibold,
       color: colors.primaryText,
+      lineHeight: devanagariLineHeight(typography.fontSize.bodyLarge),
     },
     previewText: {
       fontSize: typography.fontSize.caption,

@@ -1,11 +1,12 @@
 // ScriptIndicator component – shows the script (Devanagari or Roman) of the current query.
 // Hidden when query is empty.
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { isDevanagari } from '../engine/normalize';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { spacing, typography, borderRadius } from '../theme/tokens';
+import { isDevanagari } from '../engine/normalize';
+import { useReducedMotion, motionDurations } from '../theme/motion';
+import { borderRadius, spacing, typography } from '../theme/tokens';
 
 export interface ScriptIndicatorProps {
   /** Current search query */
@@ -14,6 +15,27 @@ export interface ScriptIndicatorProps {
 
 export const ScriptIndicator: React.FC<ScriptIndicatorProps> = ({ query }) => {
   const { colors } = useTheme();
+  const isReducedMotion = useReducedMotion();
+  const opacityAnim = useRef(new Animated.Value(query ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (query) {
+      if (isReducedMotion) {
+        opacityAnim.setValue(1);
+        return;
+      }
+      const anim = Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: motionDurations.fast,
+        useNativeDriver: true,
+      });
+      anim.start();
+      return () => {
+        anim.stop();
+      };
+    }
+  }, [query, isReducedMotion, opacityAnim]);
+
   if (!query) return null;
 
   const isDev = isDevanagari(query);
@@ -21,17 +43,24 @@ export const ScriptIndicator: React.FC<ScriptIndicatorProps> = ({ query }) => {
   const background = isDev ? colors.primaryCobalt : colors.phoneticViolet;
 
   return (
-    <View style={[styles.container, { backgroundColor: background }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { backgroundColor: background, opacity: opacityAnim },
+      ]}
+      accessibilityRole="text"
+      accessibilityLabel={`Input detected in ${isDev ? 'Devanagari' : 'Roman'} script`}
+    >
       <Text style={[styles.text, { color: colors.white }]}>{label}</Text>
-    </View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'flex-start',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
     borderRadius: borderRadius.pill,
     marginBottom: spacing.sm,
   },
@@ -39,5 +68,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.badge,
     fontWeight: '600',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
 });

@@ -223,12 +223,15 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
                 </Pressable>
 
                 <Pressable
-                  style={styles.skipButton}
+                  style={({ pressed }) => [
+                    styles.skipButton,
+                    pressed && styles.skipButtonPressed,
+                  ]}
                   onPress={handleSkip}
                   accessibilityRole="button"
                   accessibilityLabel="Skip introduction"
                   disabled={isDismissing}
-                  hitSlop={8}
+                  hitSlop={{ top: 10, bottom: 10, left: 12, right: 12 }}
                 >
                   <Text style={styles.skipButtonText}>Skip introduction</Text>
                 </Pressable>
@@ -417,8 +420,14 @@ function createStyles(colors: ThemeColors) {
       letterSpacing: 0.5,
     },
     skipButton: {
+      minHeight: 44,
+      justifyContent: 'center',
+      alignItems: 'center',
       paddingVertical: spacing.xs,
       paddingHorizontal: spacing.md,
+    },
+    skipButtonPressed: {
+      opacity: 0.6,
     },
     skipButtonText: {
       fontSize: typography.fontSize.caption,

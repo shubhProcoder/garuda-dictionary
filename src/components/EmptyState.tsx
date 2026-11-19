@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { ThemeColors, borderRadius, spacing, typography } from '../theme/tokens';
+import { useReducedMotion, motionDurations } from '../theme/motion';
+import { ThemeColors, borderRadius, devanagariLineHeight, spacing, typography } from '../theme/tokens';
 
 const SUGGESTIONS = ['dharma', 'धर्म', 'shiksha', 'karma', 'bhaasha'];
 
@@ -29,7 +30,25 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onAction,
 }) => {
   const { colors } = useTheme();
+  const isReducedMotion = useReducedMotion();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const fadeAnim = useRef(new Animated.Value(isReducedMotion ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (isReducedMotion) {
+      fadeAnim.setValue(1);
+      return;
+    }
+    const anim = Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: motionDurations.collapse,
+      useNativeDriver: true,
+    });
+    anim.start();
+    return () => {
+      anim.stop();
+    };
+  }, [type, query, isReducedMotion, fadeAnim]);
 
   const isNoMatches = type === 'no_matches';
   const isNoSaved = type === 'no_saved';
@@ -64,7 +83,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   const handleAction = onAction || onClearSearch;
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      style={[styles.container, { opacity: fadeAnim }]}
+      accessibilityLiveRegion="polite"
+    >
       <Text style={styles.symbol} aria-hidden>
         {defaultSymbol}
       </Text>
@@ -80,10 +102,14 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
       {handleAction && (
         <Pressable
-          style={styles.clearButton}
+          style={({ pressed }) => [
+            styles.clearButton,
+            pressed && styles.clearButtonPressed,
+          ]}
           onPress={handleAction}
           accessibilityRole="button"
           accessibilityLabel={actionLabel || defaultActionLabel}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text style={styles.clearButtonText}>
             {actionLabel || defaultActionLabel}
@@ -104,10 +130,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
               <Pressable
                 key={s}
                 onPress={() => onSelectSuggestion(s)}
-                style={styles.suggestionChip}
+                style={({ pressed }) => [
+                  styles.suggestionChip,
+                  pressed && styles.suggestionChipPressed,
+                ]}
                 accessibilityRole="button"
                 accessibilityLabel={`Try searching ${s}`}
-                hitSlop={8}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               >
                 <Text style={styles.suggestionText}>{s}</Text>
               </Pressable>
@@ -115,7 +144,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           </ScrollView>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
@@ -155,9 +184,16 @@ function createStyles(colors: ThemeColors) {
     },
     clearButton: {
       marginTop: spacing.lg,
-      paddingBottom: 2,
+      minHeight: 44,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      justifyContent: 'center',
+      alignItems: 'center',
       borderBottomWidth: 1,
       borderBottomColor: colors.primaryCobalt,
+    },
+    clearButtonPressed: {
+      opacity: 0.65,
     },
     clearButtonText: {
       fontSize: typography.fontSize.caption,
@@ -183,11 +219,18 @@ function createStyles(colors: ThemeColors) {
       borderWidth: 1,
       borderRadius: borderRadius.pill,
       paddingHorizontal: spacing.md,
-      paddingVertical: spacing.xs,
+      paddingVertical: spacing.sm,
+      minHeight: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    suggestionChipPressed: {
+      backgroundColor: colors.paperDeep,
     },
     suggestionText: {
       fontSize: typography.fontSize.body,
       color: colors.primaryText,
+      lineHeight: devanagariLineHeight(typography.fontSize.body),
     },
   });
 }

@@ -14,7 +14,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { DictionaryEntry } from '../types/dictionary';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadingSize, useTheme } from '../context/ThemeContext';
-import { ThemeColors, borderRadius, scaleDevanagari, spacing, typography } from '../theme/tokens';
+import { ThemeColors, borderRadius, devanagariLineHeight, scaleDevanagari, spacing, typography } from '../theme/tokens';
 
 interface WordOfTheDayProps {
   entries: DictionaryEntry[];
@@ -78,15 +78,20 @@ export const WordOfTheDay: React.FC<WordOfTheDayProps> = ({ entries, onPress }) 
     >
       {/* Header row */}
       <View style={styles.headerRow}>
-        <Text style={styles.kicker}>WORD OF THE DAY</Text>
+        <Text style={styles.kicker} accessibilityRole="header">WORD OF THE DAY</Text>
         <Pressable
           onPress={(e) => {
             e.stopPropagation?.();
             toggleBookmark(entry.id);
           }}
-          hitSlop={8}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           accessibilityRole="button"
+          accessibilityState={{ selected: bookmarked }}
           accessibilityLabel={bookmarked ? 'Remove bookmark' : 'Bookmark this word'}
+          style={({ pressed }) => [
+            styles.bookmarkButton,
+            pressed && styles.bookmarkButtonPressed,
+          ]}
         >
           <Text style={[styles.bookmarkIcon, bookmarked && styles.bookmarkActive]}>
             {bookmarked ? '★' : '☆'}
@@ -149,6 +154,17 @@ function createStyles(colors: ThemeColors, devanagariScale: number) {
       fontWeight: typography.fontWeight.bold,
       letterSpacing: 1,
     },
+    bookmarkButton: {
+      padding: spacing.xs,
+      borderRadius: borderRadius.pill,
+      minWidth: 36,
+      minHeight: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    bookmarkButtonPressed: {
+      backgroundColor: colors.paperDeep,
+    },
     bookmarkIcon: {
       fontSize: 20,
       color: colors.muted,
@@ -161,7 +177,7 @@ function createStyles(colors: ThemeColors, devanagariScale: number) {
       fontWeight: typography.fontWeight.bold,
       color: colors.primaryText,
       marginBottom: spacing.xs,
-      lineHeight: Math.round(scaledHeadwordSize * 1.25),
+      lineHeight: devanagariLineHeight(scaledHeadwordSize),
     },
     metaRow: {
       flexDirection: 'row',

@@ -34,6 +34,7 @@ function RootNavigation() {
       />
       <Stack
         screenOptions={{
+          animation: 'slide_from_right',
           headerStyle: {
             backgroundColor: colors.canvasPaper,
           },

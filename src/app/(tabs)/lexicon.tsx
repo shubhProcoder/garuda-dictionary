@@ -98,6 +98,7 @@ export default function LexiconScreen() {
         keyExtractor={(item) => String(item.entry.id)}
         contentContainerStyle={styles.listContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <View style={styles.titleRow}>
@@ -236,7 +237,7 @@ function createStyles(colors: ThemeColors) {
       fontSize: typography.fontSize.caption,
       color: colors.muted,
       marginTop: spacing.xs,
-      lineHeight: 16,
+      lineHeight: 18,
     },
     searchSection: {
       marginTop: spacing.md,

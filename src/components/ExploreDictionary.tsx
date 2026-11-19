@@ -12,7 +12,7 @@ import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { DictionaryEntry } from '../types/dictionary';
 import { useReadingSize, useTheme } from '../context/ThemeContext';
-import { ThemeColors, borderRadius, scaleDevanagari, spacing, typography } from '../theme/tokens';
+import { ThemeColors, borderRadius, devanagariLineHeight, scaleDevanagari, spacing, typography } from '../theme/tokens';
 
 interface ExploreDictionaryProps {
   entries: DictionaryEntry[];
@@ -61,12 +61,16 @@ export const ExploreDictionary: React.FC<ExploreDictionaryProps> = ({
     <View style={styles.container}>
       {/* Section heading */}
       <View style={styles.headerRow}>
-        <Text style={styles.heading}>EXPLORE THE DICTIONARY</Text>
+        <Text style={styles.heading} accessibilityRole="header">EXPLORE THE DICTIONARY</Text>
         <Pressable
           onPress={onViewAll}
-          hitSlop={8}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           accessibilityRole="button"
           accessibilityLabel="View all dictionary entries in Lexicon tab"
+          style={({ pressed }) => [
+            styles.viewAllButton,
+            pressed && styles.viewAllButtonPressed,
+          ]}
         >
           <Text style={styles.viewAll}>View all →</Text>
         </Pressable>
@@ -127,6 +131,14 @@ function createStyles(colors: ThemeColors, devanagariScale: number) {
       fontWeight: typography.fontWeight.bold,
       letterSpacing: 1,
     },
+    viewAllButton: {
+      minHeight: 44,
+      justifyContent: 'center',
+      paddingHorizontal: spacing.xs,
+    },
+    viewAllButtonPressed: {
+      opacity: 0.65,
+    },
     viewAll: {
       fontSize: typography.fontSize.caption,
       color: colors.primaryCobalt,
@@ -135,9 +147,11 @@ function createStyles(colors: ThemeColors, devanagariScale: number) {
     scrollContent: {
       flexDirection: 'row',
       gap: spacing.sm,
+      paddingVertical: 2,
     },
     card: {
-      width: 136,
+      minWidth: 136,
+      maxWidth: 160,
       backgroundColor: colors.elevatedSurface,
       borderRadius: borderRadius.md,
       borderWidth: 1,
@@ -146,13 +160,14 @@ function createStyles(colors: ThemeColors, devanagariScale: number) {
       gap: spacing.xs,
     },
     cardPressed: {
-      backgroundColor: colors.paper,
+      backgroundColor: colors.paperDeep,
+      borderColor: colors.primaryCobalt,
     },
     headword: {
       fontSize: scaledHeadwordSize,
       fontWeight: typography.fontWeight.semibold,
       color: colors.primaryText,
-      lineHeight: Math.round(scaledHeadwordSize * 1.3),
+      lineHeight: devanagariLineHeight(scaledHeadwordSize, 1.34),
     },
     transliteration: {
       fontSize: typography.fontSize.caption,
